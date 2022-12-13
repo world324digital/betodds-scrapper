@@ -21,14 +21,18 @@ class Snai:
         link_menu = item.find_element(By.XPATH, "a")
         link_menu.click()
         list_title = link_menu.text
-        # print(list_title)
+        print(list_title)
         time.sleep(3)
         sub_list = item.find_elements(By.XPATH, "div//a[contains(@class, 'list-group-item')]")
         for sub_item in sub_list:
             sub_item.click()
             sub_title = sub_item.text.replace("&nbsp;", "")
-            # print("--- " + sub_title)
-            time.sleep(18)
+            print("--- " + sub_title)
+            loading = 1
+            while loading == 1:
+                loading_element = self.driver.find_element(By.XPATH, "//div[contains(@class, 'box_container')]//div[contains(@class, 'panel-primary')]/div[last()]")
+                if 'ng-hide' in loading_element.get_attribute("class").split():
+                    loading = 0
             match_date_list = self.driver.find_elements(By.XPATH, "//div[@ng-if='manif.visualizzazioneScorecast==0']")
             event_date = ""
             for date_item in match_date_list:
@@ -82,11 +86,16 @@ class Snai:
                             odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                             ng = odd_info.text
                         odd_index = odd_index + 1
-                    # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+                    print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
                     row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai")
+                    # self.db_manager.insert_row(row)
+                    if self.total_counts == 200:
+                        self.db_manager.insert_data(self.odds_list)
+                        self.odds_list = []
+                        self.total_counts = 0
                     self.odds_list.append(row)
                     self.total_counts = self.total_counts + 1
-                    print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
+                    # print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
 
     def main(self):
         self.driver.get("https://www.snai.it/sport")
