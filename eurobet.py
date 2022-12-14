@@ -85,9 +85,13 @@ class EuroBet:
 				# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "eurobet")
 				# self.db_manager.insert_data(row)
+				if self.total_counts == 200:
+					self.db_manager.insert_data(self.odds_list)
+					self.odds_list = []
+					self.total_counts = 0
 				self.odds_list.append(row)
 				self.total_counts = self.total_counts + 1
-				print(self.total_counts, "matches fetched", end="\r")
+				# print(self.total_counts, "matches fetched", end="\r")
 
 	def main(self):
 		# main.check()

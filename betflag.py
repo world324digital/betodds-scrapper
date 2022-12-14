@@ -37,8 +37,12 @@ class BetFlag:
 				event_date = time_info.split("T")[0]
 				event_time = time_info.split("T")[1]
 				equal = match_item.get_attribute("c_dav")
-				team1 = equal.split(" - ")
-				team2 = equal.split(" - ")
+				if len(equal.split(" - ")) > 1:
+					team1 = equal.split(" - ")[0]
+					team2 = equal.split(" - ")[1]
+				else:
+					team1 = ""
+					team2 = ""
 				first = ""
 				draw = ""
 				second = ""
@@ -91,11 +95,11 @@ class BetFlag:
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betflag")
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
+					# print(self.total_counts, "matches fetched", end="\r")
 					self.odds_list = []
 					self.total_counts = 0
 				self.odds_list.append(row)
 				self.total_counts = self.total_counts + 1
-				print(self.total_counts, "matches fetched", end="\r")
 			sub_item.click()
 
 	def main(self):

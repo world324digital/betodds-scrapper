@@ -21,19 +21,29 @@ class Snai:
         link_menu = item.find_element(By.XPATH, "a")
         link_menu.click()
         list_title = link_menu.text
-        print(list_title)
+        # print(list_title)
         time.sleep(3)
         sub_list = item.find_elements(By.XPATH, "div//a[contains(@class, 'list-group-item')]")
         for sub_item in sub_list:
             sub_item.click()
             sub_title = sub_item.text.replace("&nbsp;", "")
-            print("--- " + sub_title)
+            # print("--- " + sub_title)
+            time.sleep(3)
+            start_time = time.time()
+            delay = 0
             loading = 1
             while loading == 1:
-                loading_element = self.driver.find_element(By.XPATH, "//div[contains(@class, 'box_container')]//div[contains(@class, 'panel-primary')]/div[last()]")
-                if 'ng-hide' in loading_element.get_attribute("class").split():
+                loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'box_container')]//div[contains(@class, 'panel-primary')]/div[contains(@ng-show, '!manif.showManif')]")
+                if len(loading_element) > 0:
+                    if 'ng-hide' in loading_element[0].get_attribute("class").split():
+                        loading = 0
+                end_time = time.time()
+                delay = (int)(end_time - start_time)
+                if delay >= 60:
                     loading = 0
-            match_date_list = self.driver.find_elements(By.XPATH, "//div[@ng-if='manif.visualizzazioneScorecast==0']")
+            time.sleep(2)
+            match_date_list = self.driver.find_elements(By.XPATH, "//div[contains(@ng-if, 'manif.visualizzazioneScorecast==0')]")
+            # print(len(match_date_list))
             event_date = ""
             for date_item in match_date_list:
                 event_date = date_item.find_element(By.XPATH, "h4/a").text
@@ -86,7 +96,7 @@ class Snai:
                             odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                             ng = odd_info.text
                         odd_index = odd_index + 1
-                    print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+                    # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
                     row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai")
                     # self.db_manager.insert_row(row)
                     if self.total_counts == 200:
@@ -104,12 +114,14 @@ class Snai:
         close_btn.click()
         soccer_menu = self.driver.find_element(By.ID, "heading_0")
         soccer_menu.click()
+        time.sleep(5)
         soccer_sidebar = self.driver.find_element(By.ID, "CALCIO_0")
-        sport_list = soccer_sidebar.find_elements(By.XPATH, "//div[contains(@class, 'subOne')]/div")
-        # time.sleep(5)
+        sport_list = soccer_sidebar.find_elements(By.XPATH, "div[contains(@class, 'panel-body')]/div[contains(@class, 'subOne')]/div")
         # print(len(sport_list))
         for i in range(len(sport_list)):
             item = sport_list[i]
+            # print(item.get_attribute("outerHTML"))
+            # print("===============")
             self.fetch_data(item)
         self.db_manager.insert_data(self.odds_list)
         # self.driver.quit()
