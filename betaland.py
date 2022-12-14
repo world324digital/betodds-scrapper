@@ -3,111 +3,116 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from fp.fp import FreeProxy
 import time
+from datetime import datetime
+from translate import Translator
 
-options = Options()
-proxy = FreeProxy(country_id=["ID"], https=True).get()
-proxy = proxy.replace("http://", "")
-proxy = proxy.replace("https://", "")
-# proxy = "134.238.252.143:8080"
-print(proxy)
-options.add_argument("start-maximized")
-options.add_argument("--proxy-server=" + proxy)
-options.add_argument("ignore-certificate-errors")
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+class BetaLand:
 
-def fetch_data(item):
-	item.click()
-	list_title = item.find_element(By.XPATH, "a").text
-	print(list_title)
-	time.sleep(3)
-	sub_list = item.find_elements(By.XPATH, "ul/li")
-	for sub_item in sub_list:
-		sub_item.click()
-		sub_title = sub_item.find_element(By.XPATH, "a").text
-		print("--- " + sub_title)
+	options = Options()
+	options.add_argument("start-maximized")
+	options.add_argument("ignore-certificate-errors")
+	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+	def __init__(self):
+		self.total_counts = 0
+		self.odds_list = []
+
+	def convert_date(self, txt):
+		splited_txt = txt.split(" ")
+		day = splited_txt[0]
+		translator = Translator(from_lang="italian", to_lang="english")
+		return day + " " + translator.translate(splited_txt[1]) + " " + splited_txt[2]
+
+	def fetch_data(self, item):
+		link_item = item.find_element(By.XPATH, "div[contains(@class, 'elemento-competizioni-widget')]/a")
+		link_item.click()
+		list_title = link_item.text
+		print(list_title)
 		time.sleep(3)
-		match_list = driver.find_elements(By.XPATH, "//div[@class='containerEvents']/div")
-		# print(len(match_list))
-		for match_item in match_list:
-			time_info = match_item.get_attribute("c_dat")
-			event_date = time_info.split("T")[0]
-			event_time = time_info.split("T")[1]
-			equal = match_item.get_attribute("c_dav")
-			team1 = equal.split(" - ")
-			team2 = equal.split(" - ")
-			first = ""
-			draw = ""
-			second = ""
-			under = ""
-			over = ""
-			gg = ""
-			ng = ""
-			event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p1')]//div[contains(@class, 'oddPrematch')]")
-			odd_index = 0
-			for odd_item in event_odds:
-				odd_info = odd_item.find_elements(By.XPATH, "div/a")
-				locked = 0
-				if 'lock' in odd_item.get_attribute("class").split():
-					locked = 1
-				else:
+		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
+		for sub_item in sub_list:
+			sub_item.click()
+			sub_title = sub_item.text
+			print("--- " + sub_title)
+			time.sleep(3)
+			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'contenitore-table-grande')]//div[contains(@class, 'contenitore-table')]/div[contains(@class, 'contenitoreRiga')]")
+			# print(len(match_list))
+			for match_item in match_list:
+				time_info = match_item.find_element(By.XPATH, "div[contains(@class, 'tabellaQuoteNew')]/div[contains(@class, 'tabellaQuoteTempo')]")
+				date_string = self.convert_date(time_info.find_element(By.XPATH, "//span[contains(@class, 'tabellaQuoteTempo__data')]").get_attribute("innerHTML").split(" ", 1)[1])
+				print(date_string)
+				converted_date = datetime.strptime(date_string, "%d %B %Y")
+				event_date = converted_date.strftime("%m-%d-%Y")
+				event_time = time_info.find_element(By.XPATH, "//span[contains(@class, 'tabellaQuoteTempo__ora')]").text
+				team_info = match_item.find_elements(By.XPATH, "div[contains(@class, 'tabellaQuoteNew')]/div[contains(@class, 'tabellaQuoteSquadre')]/p")
+				team1 = ""
+				team2 = ""
+				if len(team_info) > 2:
+					team1 = team_info[0].text
+					team2 = team_info[2].text
+				equal = team1 + " - " + team2
+				first = ""
+				draw = ""
+				second = ""
+				under = ""
+				over = ""
+				gg = ""
+				ng = ""
+				event_odds = match_item.find_elements(By.XPATH, "div[contains(@class, 'tabellaQuoteNew')]/div[contains(@class, 'tabellaQuoteContenitoreQuotazioni')]//div[contains(@class, 'contenitoreSingolaQuota')]")
+				odd_index = 0
+				for odd_item in event_odds:
+					odd_info = odd_item.find_element(By.XPATH, "p[contains(@class, 'tipoQuotazione_1')]")
 					if odd_index == 0:
-						first = odd_item.get_attribute("c_quo")
+						first = odd_info.text
 					elif odd_index == 1:
-						draw = odd_item.get_attribute("c_quo")
+						draw = odd_info.text
 					elif odd_index == 2:
-						second = odd_item.get_attribute("c_quo")
-				odd_index = odd_index + 1
-			event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p2')]//div[contains(@class, 'oddPrematch')]")
-			odd_index = 0
-			for odd_item in event_odds:
-				odd_info = odd_item.find_elements(By.XPATH, "div/a")
-				locked = 0
-				if 'lock' in odd_item.get_attribute("class").split():
-					locked = 1
-				else:
-					if odd_index == 0:
-						gg = odd_item.get_attribute("c_quo")
-					elif odd_index == 1:
-						ng = odd_item.get_attribute("c_quo")
-				odd_index = odd_index + 1
-			event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p3')]//div[contains(@class, 'oddPrematch')]")
-			odd_index = 0
-			for odd_item in event_odds:
-				odd_info = odd_item.find_elements(By.XPATH, "div/a")
-				locked = 0
-				if 'lock' in odd_item.get_attribute("class").split():
-					locked = 1
-				else:
-					if odd_index == 0:
-						under = odd_item.get_attribute("c_quo")
-					elif odd_index == 1:
-						over = odd_item.get_attribute("c_quo")
-				odd_index = odd_index + 1
-			print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-		sub_item.click()
+						second = odd_info.text
+					elif odd_index == 3:
+						under = odd_info.text
+					elif odd_index == 4:
+						over = odd_info.text
+					elif odd_index == 5:
+						gg = odd_info.text
+					elif odd_index == 6:
+						ng = odd_info.text
+					odd_index = odd_index + 1
+				print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betaland")
+				if self.total_counts == 200:
+					# self.db_manager.insert_data(self.odds_list)
+					self.odds_list = []
+					self.total_counts = 0
+				self.odds_list.append(row)
+				self.total_counts = self.total_counts + 1
+			sub_item.click()
 
-def main():
-    driver.get("https://www.betaland.it/")
-    time.sleep(500)
-    cookie_close_btn = driver.find_element(By.ID, "LinkButton2")
-    cookie_close_btn.click()
-    time.sleep(10)
-    modal_close_btn = driver.find_element(By.XPATH, "//div[@class='btn-close']")
-    modal_close_btn.click()
-    soccer_sidebar = driver.find_element(By.ID, "mhs-1")
+	def main(self):
+		self.driver.get("https://www.betaland.it/")
+		time.sleep(5)
+		cookie_close_btn = self.driver.find_element(By.XPATH, "//div[contains(@class, 'tibrr-cookie-consent-button')]/button")
+		cookie_close_btn.click()
+		time.sleep(2)
 
-    # Get last menu item for expand and click
-    soccer_menu = soccer_sidebar.find_element(By.XPATH, "a")
-    soccer_menu.click()
-    sport_list = soccer_sidebar.find_elements(By.XPATH, "ul/li")
-    time.sleep(2)
-    for i in range(len(sport_list)):
-        item = sport_list[i]
-        fetch_data(item)
-    # driver.quit()
-    # driver.close()
+		footer = self.driver.find_element(By.ID, "blocco-tasti-bottom")
+		footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", footer)
+
+		# Get last menu item for expand and click
+		soccer_menu = self.driver.find_element(By.ID, "sport-1")
+		soccer_menu.click()
+		soccer_sidebar = self.driver.find_element(By.ID, "menu-sport-1")
+		sport_list = soccer_sidebar.find_elements(By.XPATH, "div[contains(@class, 'regione-widget')]")
+		time.sleep(2)
+		print(len(sport_list))
+		# time.sleep(200)
+		for i in range(len(sport_list)):
+			item = sport_list[i]
+			self.fetch_data(item)
+		# self.db_manager.insert_data(self.odds_list)
+		# self.driver.quit()
+		# self.driver.close()
 
 if __name__ == "__main__":
-    main()
+	betaland = BetaLand()
+	betaland.main()
