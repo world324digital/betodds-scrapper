@@ -30,13 +30,15 @@ class BetaLand:
 
 	def fetch_data(self, item):
 		link_item = item.find_element(By.XPATH, "div[contains(@class, 'elemento-competizioni-widget')]/a")
-		link_item.click()
+		# link_item.click()
+		self.driver.execute_script("arguments[0].click();", link_item)
 		list_title = link_item.text
 		print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
 		for sub_item in sub_list:
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.text
 			print("--- " + sub_title)
 			time.sleep(3)
@@ -91,7 +93,8 @@ class BetaLand:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
 		self.driver.get("https://www.betaland.it/")

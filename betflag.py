@@ -23,12 +23,14 @@ class BetFlag:
 
 	def fetch_data(self, item):
 		item.click()
+		self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.find_element(By.XPATH, "a").text
 		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul/li")
 		for sub_item in sub_list:
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.find_element(By.XPATH, "a").text
 			# print("--- " + sub_title)
 			time.sleep(3)
@@ -102,7 +104,8 @@ class BetFlag:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
 		self.driver.get("https://www.betflag.it/sport")

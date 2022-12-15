@@ -22,26 +22,32 @@ class LottoMatica:
 		self.db_manager = DbManager()
 		self.odds_list = []
 
-	def convert_date(self, txt):
-		splited_txt = txt.split(" ")
-		day = splited_txt[0]
-		translator = Translator(from_lang="italian", to_lang="english")
-		return day + " " + translator.translate(splited_txt[1]) + " " + splited_txt[2]
-
 	def fetch_data(self, item):
-		item.click()
+		time.sleep(3)
+		link_click_item = item.find_element(By.XPATH, "a")
+		# link_click_item.click()
+		self.driver.execute_script("arguments[0].click();", link_click_item)
 		link_item = item.find_element(By.XPATH, "a/div/span[last()]")
 		list_title = link_item.text
 		print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul/li")
 		for sub_item in sub_list:
-			sub_item.click()
 			sub_link_item = sub_item.find_element(By.XPATH, "a/span/div/div")
+			self.driver.execute_script("arguments[0].click();", sub_link_item)
+			# sub_link_item.click()
 			sub_title = sub_link_item.text
+			if sub_title == "":
+				sub_title = sub_link_item.get_attribute("innerHTML")
 			print("--- " + sub_title)
+			loading = 1
+			while loading == 1:
+				loading_element = self.driver.find_element(By.ID, "spinner-loading")
+				if 'fade' in loading_element.get_attribute("class").split():
+				    loading = 0
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
+			time.sleep(3)
 			# print(len(match_list))
 			for match_item in match_list:
 				time_info = match_item.get_attribute("data-evndate").split(" ")
@@ -83,7 +89,13 @@ class LottoMatica:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			sub_item.click()
+			loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
+			if len(loading_element) > 0:
+				print(loading_element.get_attribute("outerHTML"))
+			time.sleep(1)
+			self.driver.execute_script("arguments[0].click();", sub_link_item)
+			# sub_link_item.click()
+			# sub_click_item.click()
 
 	def main(self):
 		self.driver.get("https://www.lottomatica.it/scommesse/sport/")

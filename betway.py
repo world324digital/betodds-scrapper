@@ -29,13 +29,15 @@ class BetWay:
 		return day + " " + translator.translate(splited_txt[1]) + " " + splited_txt[2]
 
 	def fetch_data(self, item):
-		item.click()
+		# item.click()
+		self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.text
 		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
 		for sub_item in sub_list:
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.text
 			# print("--- " + sub_title)
 			time.sleep(3)
@@ -89,7 +91,8 @@ class BetWay:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
 		self.driver.get("https://www.betway.it/scommesse")

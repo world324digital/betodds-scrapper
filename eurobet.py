@@ -20,13 +20,15 @@ class EuroBet:
 		self.total_counts = 0
 
 	def fetch_data(self, item):
-		item.click()
+		# item.click()
+		self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.find_element(By.XPATH, "a/h4").text
 		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul[@class='sidebar-league']/li")
 		for sub_item in sub_list:
-			sub_item.click()
+			# sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.find_element(By.XPATH, "a/h4").text
 			# print("--- " + sub_title)
 			time.sleep(3)

@@ -21,13 +21,15 @@ class Snai:
 
     def fetch_data(self, item):
         link_menu = item.find_element(By.XPATH, "a")
-        link_menu.click()
+        # link_menu.click()
+        self.driver.execute_script("arguments[0].click();", link_menu)
         list_title = link_menu.text
         # print(list_title)
         time.sleep(3)
         sub_list = item.find_elements(By.XPATH, "div//a[contains(@class, 'list-group-item')]")
         for sub_item in sub_list:
-            sub_item.click()
+            # sub_item.click()
+			self.driver.execute_script("arguments[0].click();", sub_item)
             sub_title = sub_item.text.replace("&nbsp;", "")
             # print("--- " + sub_title)
             time.sleep(3)
