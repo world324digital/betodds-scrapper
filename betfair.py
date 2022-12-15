@@ -12,7 +12,9 @@ class BetFair:
     options.add_argument("start-maximized")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    def __init__(self):
+    def __init__(self, epoch = 1, epoch_time = ""):
+        self.epoch = epoch
+        self.epoch_time = epoch_time
         self.db_manager = DbManager()
         self.total_counts = 0
         self.odds_list = []
@@ -68,16 +70,17 @@ class BetFair:
                         under = odd_info[0].text
                 odd_index = odd_index + 1
             # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-            row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair")
+            row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair", self.epoch_time)
             self.odds_list.append(row)
             self.total_counts = self.total_counts + 1
             print(self.total_counts, "matches fetched", end="\r")
 
     def main(self):
         self.driver.get("https://www.betfair.com/sport/football")
-        time.sleep(3)
-        close_btn = self.driver.find_element(By.ID, "onetrust-accept-btn-handler")
-        close_btn.click()
+        if self.epoch == 1:
+            time.sleep(3)
+            close_btn = self.driver.find_element(By.ID, "onetrust-accept-btn-handler")
+            close_btn.click()
         time.sleep(3)
         soccer_menu = self.driver.find_element(By.XPATH, "//div[@class='chooser-container']//div[contains(@class, 'ui-toggle-button-options')]/span[contains(@class, 'ui-toggle-button-option')][2]/a")
         soccer_menu.click()

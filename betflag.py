@@ -14,7 +14,9 @@ class BetFlag:
 	options.add_argument("start-maximized")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-	def __init__(self):
+	def __init__(self, epoch = 1, epoch_time = ""):
+		self.epoch = epoch
+		self.epoch_time = epoch_time
 		self.total_counts = 0
 		self.db_manager = DbManager()
 		self.odds_list = []
@@ -91,24 +93,25 @@ class BetFlag:
 						elif odd_index == 1:
 							over = odd_item.get_attribute("c_quo")
 					odd_index = odd_index + 1
-				# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betflag")
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betflag", self.epoch_time)
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
-					# print(self.total_counts, "matches fetched", end="\r")
 					self.odds_list = []
 					self.total_counts = 0
-				self.odds_list.append(row)
-				self.total_counts = self.total_counts + 1
+				if team1 != "" and team2 != "":
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+					self.odds_list.append(row)
+					self.total_counts = self.total_counts + 1
 			sub_item.click()
 
 	def main(self):
 		self.driver.get("https://www.betflag.it/sport")
-		cookie_close_btn = self.driver.find_element(By.ID, "LinkButton2")
-		cookie_close_btn.click()
-		time.sleep(10)
-		modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
-		modal_close_btn.click()
+		if self.epoch == 1:
+			cookie_close_btn = self.driver.find_element(By.ID, "LinkButton2")
+			cookie_close_btn.click()
+			time.sleep(10)
+			modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
+			modal_close_btn.click()
 		soccer_sidebar = self.driver.find_element(By.ID, "mhs-1")
 
 		# Get last menu item for expand and click

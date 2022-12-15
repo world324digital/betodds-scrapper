@@ -12,7 +12,9 @@ class Snai:
     options.add_argument("start-maximized")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    def __init__(self):
+    def __init__(self, epoch = 1, epoch_time = ""):
+        self.epoch = epoch
+        self.epoch_time = epoch_time
         self.total_counts = 0
         self.db_manager = DbManager()
         self.odds_list = []
@@ -96,22 +98,24 @@ class Snai:
                             odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                             ng = odd_info.text
                         odd_index = odd_index + 1
-                    # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-                    row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai")
+                    row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai", self.epoch_time)
                     # self.db_manager.insert_row(row)
                     if self.total_counts == 200:
                         self.db_manager.insert_data(self.odds_list)
                         self.odds_list = []
                         self.total_counts = 0
+                    if team1 != "" and team2 != "":
+                    print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
                     self.odds_list.append(row)
                     self.total_counts = self.total_counts + 1
                     # print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
 
     def main(self):
         self.driver.get("https://www.snai.it/sport")
-        time.sleep(3)
-        close_btn = self.driver.find_element(By.ID, "cookie_consent_banner_closer")
-        close_btn.click()
+        if self.epoch == 1:
+            time.sleep(3)
+            close_btn = self.driver.find_element(By.ID, "cookie_consent_banner_closer")
+            close_btn.click()
         soccer_menu = self.driver.find_element(By.ID, "heading_0")
         soccer_menu.click()
         time.sleep(5)

@@ -15,7 +15,7 @@ class BetWay:
 	options.add_argument("ignore-certificate-errors")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-	def __init__(self, epoch = 0, epoch_time = ""):
+	def __init__(self, epoch = 1, epoch_time = ""):
 		self.epoch = epoch
 		self.epoch_time = epoch_time
 		self.total_counts = 0
@@ -99,10 +99,8 @@ class BetWay:
 			cookie_close_btn = self.driver.find_element(By.ID, "CybotCookiebotDialogBodyButtonDecline")
 			cookie_close_btn.click()
 			time.sleep(2)
-
 			footer = self.driver.find_element(By.ID, "blocco-tasti-bottom")
 			footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", footer)
-
 			cg_footer = self.driver.find_element(By.ID, "cg-footer")
 			cg_footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", cg_footer)
 
@@ -115,7 +113,7 @@ class BetWay:
 		# time.sleep(200)
 		for i in range(len(sport_list)):
 			item = sport_list[i]
-			# self.fetch_data(item)
+			self.fetch_data(item)
 		self.db_manager.insert_data(self.odds_list)
 		# self.driver.quit()
 		# self.driver.close()

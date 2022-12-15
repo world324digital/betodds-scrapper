@@ -12,7 +12,9 @@ class EuroBet:
 	# options.add_argument("--headless")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-	def __init__(self):
+	def __init__(self, epoch = 1, epoch_time = ""):
+		self.epoch = epoch
+		self.epoch_time = epoch_time
 		self.db_manager = DbManager()
 		self.odds_list = []
 		self.total_counts = 0
@@ -82,24 +84,24 @@ class EuroBet:
 						elif odd_index == 6:
 							ng = odd_info[0].text
 					odd_index = odd_index + 1
-				# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "eurobet")
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "eurobet", self.epoch_time)
 				# self.db_manager.insert_data(row)
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
 					self.total_counts = 0
-				self.odds_list.append(row)
-				self.total_counts = self.total_counts + 1
+				if team1 != "" and team2 != "":
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+					self.odds_list.append(row)
+					self.total_counts = self.total_counts + 1
 				# print(self.total_counts, "matches fetched", end="\r")
 
 	def main(self):
-		# main.check()
-		time.sleep(20)
 		self.driver.get("https://www.eurobet.it/scommesse/")
-		time.sleep(3)
-		close_btn = self.driver.find_elements(By.CLASS_NAME, "onetrust-close-btn-handler")[0]
-		close_btn.click()
+		if self.epoch == 1:
+			time.sleep(3)
+			close_btn = self.driver.find_elements(By.CLASS_NAME, "onetrust-close-btn-handler")[0]
+			close_btn.click()
 		time.sleep(1)
 		soccer_sidebar = self.driver.find_elements(By.CLASS_NAME, "sidebar-competition")[1]
 
@@ -119,7 +121,6 @@ class EuroBet:
 		# print(self.odds_list)
 		self.db_manager.insert_data(self.odds_list)
 		# self.db_manager.get_data()
-		# main_process.check()
 		# self.driver.quit()
 		# self.driver.close()
 

@@ -15,7 +15,9 @@ class BetaLand:
 	options.add_argument("ignore-certificate-errors")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-	def __init__(self):
+	def __init__(self, epoch = 1, epoch_time = ""):
+		self.epoch = epoch
+		self.epoch_time = epoch_time
 		self.total_counts = 0
 		self.db_manager = DbManager()
 		self.odds_list = []
@@ -43,7 +45,6 @@ class BetaLand:
 			for match_item in match_list:
 				time_info = match_item.find_element(By.XPATH, "div[contains(@class, 'tabellaQuoteNew')]/div[contains(@class, 'tabellaQuoteTempo')]")
 				date_string = self.convert_date(time_info.find_element(By.XPATH, "//span[contains(@class, 'tabellaQuoteTempo__data')]").get_attribute("innerHTML").split(" ", 1)[1])
-				print(date_string)
 				converted_date = datetime.strptime(date_string, "%d %B %Y")
 				event_date = converted_date.strftime("%m-%d-%Y")
 				event_time = time_info.find_element(By.XPATH, "//span[contains(@class, 'tabellaQuoteTempo__ora')]").text
@@ -81,7 +82,7 @@ class BetaLand:
 						ng = odd_info.text
 					odd_index = odd_index + 1
 				print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betaland")
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betaland", self.epoch_time)
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
@@ -95,9 +96,10 @@ class BetaLand:
 	def main(self):
 		self.driver.get("https://www.betaland.it/")
 		time.sleep(5)
-		cookie_close_btn = self.driver.find_element(By.XPATH, "//div[contains(@class, 'tibrr-cookie-consent-button')]/button")
-		cookie_close_btn.click()
-		time.sleep(2)
+		if self.epoch == 1:
+			cookie_close_btn = self.driver.find_element(By.XPATH, "//div[contains(@class, 'tibrr-cookie-consent-button')]/button")
+			cookie_close_btn.click()
+			time.sleep(2)
 
 		footer = self.driver.find_element(By.ID, "blocco-tasti-bottom")
 		footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", footer)

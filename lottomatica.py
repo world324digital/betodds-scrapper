@@ -15,7 +15,9 @@ class LottoMatica:
 	options.add_argument("ignore-certificate-errors")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-	def __init__(self):
+	def __init__(self, epoch = 1, epoch_time = ""):
+		self.epoch = epoch
+		self.epoch_time = epoch_time
 		self.total_counts = 0
 		self.db_manager = DbManager()
 		self.odds_list = []
@@ -72,7 +74,7 @@ class LottoMatica:
 				gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
 				gg = gol_info[0].text
 				ng = gol_info[1].text
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica")
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
@@ -86,12 +88,13 @@ class LottoMatica:
 	def main(self):
 		self.driver.get("https://www.lottomatica.it/scommesse/sport/")
 		time.sleep(3)
-		cookie_close_btn = self.driver.find_element(By.ID, "onetrust-pc-btn-handler")
-		cookie_close_btn.click()
-		time.sleep(2)
+		if self.epoch == 1:
+			cookie_close_btn = self.driver.find_element(By.ID, "onetrust-pc-btn-handler")
+			cookie_close_btn.click()
+			time.sleep(2)
 
-		button = self.driver.find_element(By.CLASS_NAME, "ot-pc-refuse-all-handler")
-		button.click()
+			button = self.driver.find_element(By.CLASS_NAME, "ot-pc-refuse-all-handler")
+			button.click()
 
 		soccer_menu = self.driver.find_element(By.XPATH, "//ul[@id='menu']/li[2]")
 		soccer_menu.click()
