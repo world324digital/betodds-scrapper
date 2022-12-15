@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import threading
 from datetime import datetime
 from translate import Translator
 from db_manager import DbManager
@@ -122,6 +123,14 @@ class LottoMatica:
 		# self.driver.quit()
 		# self.driver.close()
 
+    def run(self):
+        threading.Timer(1800, self.run).start()
+        now_time = datetime.fromtimestamp(time.time())
+        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+        print(self.epoch, self.epoch_time)
+        self.main()
+        self.epoch = self.epoch + 1
+
 if __name__ == "__main__":
 	lottomatica = LottoMatica()
-	lottomatica.main()
+	lottomatica.run()

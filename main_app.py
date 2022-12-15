@@ -29,15 +29,14 @@ class OddsMatcher:
         lottomatica = LottoMatica(self.epoch, now_time.strftime("%Y-%m-%d %H:%M:%S"))
         planetwin = PlanetWin(self.epoch, now_time.strftime("%Y-%m-%d %H:%M:%S"))
         snai = Snai(self.epoch, now_time.strftime("%Y-%m-%d %H:%M:%S"))
-        betway.main()
-        eurobet.main()
-        betaland.main()
-        betfair.main()
-        betflag.main()
-        goldbet.main()
-        lottomatica.main()
-        planetwin.main()
-        snai.main()
+        # eurobet.main()
+        # betaland.main()
+        # betfair.main()
+        # betflag.main()
+        # goldbet.main()
+        # lottomatica.main()
+        # planetwin.main()
+        # snai.main()
         self.epoch = self.epoch + 1
 
     def test(self):
