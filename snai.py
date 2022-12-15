@@ -29,7 +29,7 @@ class Snai:
         sub_list = item.find_elements(By.XPATH, "div//a[contains(@class, 'list-group-item')]")
         for sub_item in sub_list:
             # sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+            self.driver.execute_script("arguments[0].click();", sub_item)
             sub_title = sub_item.text.replace("&nbsp;", "")
             # print("--- " + sub_title)
             time.sleep(3)
@@ -107,9 +107,9 @@ class Snai:
                         self.odds_list = []
                         self.total_counts = 0
                     if team1 != "" and team2 != "":
-                    print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
-                    self.odds_list.append(row)
-                    self.total_counts = self.total_counts + 1
+                        # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+                        self.odds_list.append(row)
+                        self.total_counts = self.total_counts + 1
                     # print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
 
     def main(self):

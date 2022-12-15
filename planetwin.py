@@ -92,7 +92,7 @@ class PlanetWin:
 					self.odds_list = []
 					self.total_counts = 0
 				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
 			time.sleep(1)
@@ -107,11 +107,11 @@ class PlanetWin:
 			cookie_close_btn.click()
 			time.sleep(2)
 
-		soccer_menu = self.driver1.find_element(By.XPATH, "//ul[@id='menuSports']//div[@data-title='Calcio']")
-		soccer_menu = soccer_menu.find_element(By.XPATH, "../..")
-		self.driver1.execute_script("arguments[0].click();", soccer_menu)
-		soccer_sidebar = soccer_menu.find_element(By.XPATH, "..")
-		sport_list = soccer_sidebar.find_elements(By.XPATH, "ul/li")
+			soccer_menu = self.driver1.find_element(By.XPATH, "//ul[@id='menuSports']//div[@data-title='Calcio']")
+			soccer_menu = soccer_menu.find_element(By.XPATH, "../..")
+			self.driver1.execute_script("arguments[0].click();", soccer_menu)
+			soccer_sidebar = soccer_menu.find_element(By.XPATH, "..")
+			sport_list = soccer_sidebar.find_elements(By.XPATH, "ul/li")
 		if len(sport_list) > 0:
 			first_link = sport_list[0].find_element(By.XPATH, "ul/li[1]/a")
 			href = first_link.get_attribute("href")
@@ -130,8 +130,6 @@ class PlanetWin:
 				self.fetch_data(item)
 			self.db_manager.insert_data(self.odds_list)
 		# self.driver.quit()
-		else:
-			self.driver1.close()
 
 if __name__ == "__main__":
 	planetwin = PlanetWin()

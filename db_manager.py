@@ -79,6 +79,7 @@ class DbManager:
             mycursor.executemany(sql, odds_list)
             # mydb.commit()
             self.mydb.commit()
+            print(odds_list[0][-2])
             print(mycursor.rowcount, "was inserted")
     
     def insert_row(self, odds_list):

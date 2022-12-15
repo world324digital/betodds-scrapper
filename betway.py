@@ -29,15 +29,15 @@ class BetWay:
 		return day + " " + translator.translate(splited_txt[1]) + " " + splited_txt[2]
 
 	def fetch_data(self, item):
-		# item.click()
-		self.driver.execute_script("arguments[0].click();", item)
+		item.click()
+		# self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.text
 		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
 		for sub_item in sub_list:
-			# sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+			sub_item.click()
+			# self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.text
 			# print("--- " + sub_title)
 			time.sleep(3)
@@ -88,15 +88,15 @@ class BetWay:
 					self.odds_list = []
 					self.total_counts = 0
 				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			# sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+			sub_item.click()
+			# self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
 		self.driver.get("https://www.betway.it/scommesse")
-		print(self.epoch)
+		# print(self.epoch)
 		time.sleep(5)
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.ID, "CybotCookiebotDialogBodyButtonDecline")

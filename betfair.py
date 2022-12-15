@@ -73,7 +73,7 @@ class BetFair:
             row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair", self.epoch_time)
             self.odds_list.append(row)
             self.total_counts = self.total_counts + 1
-            print(self.total_counts, "matches fetched", end="\r")
+            # print(self.total_counts, "matches fetched", end="\r")
 
     def main(self):
         self.driver.get("https://www.betfair.com/sport/football")

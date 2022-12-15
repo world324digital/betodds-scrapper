@@ -33,14 +33,14 @@ class BetaLand:
 		# link_item.click()
 		self.driver.execute_script("arguments[0].click();", link_item)
 		list_title = link_item.text
-		print(list_title)
+		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
 		for sub_item in sub_list:
-			# sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+			sub_item.click()
+			# self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.text
-			print("--- " + sub_title)
+			# print("--- " + sub_title)
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'contenitore-table-grande')]//div[contains(@class, 'contenitore-table')]/div[contains(@class, 'contenitoreRiga')]")
 			# print(len(match_list))
@@ -83,18 +83,18 @@ class BetaLand:
 					elif odd_index == 6:
 						ng = odd_info.text
 					odd_index = odd_index + 1
-				print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+				# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betaland", self.epoch_time)
 				if self.total_counts == 200:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
 					self.total_counts = 0
 				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
-			# sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+			sub_item.click()
+			# self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
 		self.driver.get("https://www.betaland.it/")

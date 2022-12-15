@@ -13,7 +13,9 @@ class Sisal:
 	options = Options()
 	options.add_argument("start-maximized")
 	options.add_argument("ignore-certificate-errors")
-	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+	options.add_argument('disable-infobars')
+	options.add_experimental_option("excludeSwitches", ['enable-automation'])
+	driver = webdriver.Chrome(service=Service(r'C:\Users\Administrator\.wdm\drivers\chromedriver\win32\108.0.5359\chromedriver.exe'), options=options)
 
 	def __init__(self, epoch = 1, epoch_time = ""):
 		self.epoch = epoch
@@ -81,7 +83,7 @@ class Sisal:
 
 	def main(self):
 		self.driver.get("https://www.sisal.it/scommesse-matchpoint/sport/calcio")
-		time.sleep(3)
+		time.sleep(10)
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.XPATH, "//div[@id='onetrust-close-btn-container']/button")
 			cookie_close_btn.click()

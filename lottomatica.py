@@ -86,7 +86,7 @@ class LottoMatica:
 					self.odds_list = []
 					self.total_counts = 0
 				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
 			loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")

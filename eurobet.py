@@ -93,7 +93,7 @@ class EuroBet:
 					self.odds_list = []
 					self.total_counts = 0
 				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					self.odds_list.append(row)
 					self.total_counts = self.total_counts + 1
 				# print(self.total_counts, "matches fetched", end="\r")
