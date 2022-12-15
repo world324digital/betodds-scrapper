@@ -7,7 +7,7 @@ class DbManager:
         self.user = "oddsmatcher"
         self.password = "~exY([5~fjxN"
         self.database = "oddsmatcher-353030358ce0"
-        self.port = "53934"
+        self.port = "57558"
         self.mydb = mysql.connector.connect(
             host = self.host,
             user = self.user,
@@ -27,7 +27,7 @@ class DbManager:
         )
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
-        mycursor.execute("CREATE TABLE IF NOT EXISTS `python_odds_table` (`id` BIGINT(20) NOT NULL AUTO_INCREMENT,`category` varchar(255),`subcategory` varchar(255),`team1` varchar(255),`team2` varchar(255),`event_date` varchar(255),`event_time` varchar(255),`equal` varchar(255),`first` varchar(255),`second` varchar(255),`draw` varchar(255),`under` varchar(255),`over` varchar(255),`gg` varchar(255),`ng` varchar(255),`bookmarker` varchar(255),`created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY (`id`));")
+        mycursor.execute("CREATE TABLE IF NOT EXISTS `python_odds_table` (`id` BIGINT(20) NOT NULL AUTO_INCREMENT,`category` varchar(255),`subcategory` varchar(255),`team1` varchar(255),`team2` varchar(255),`event_date` varchar(255),`event_time` varchar(255),`equal` varchar(255),`first` varchar(255),`second` varchar(255),`draw` varchar(255),`under` varchar(255),`over` varchar(255),`gg` varchar(255),`ng` varchar(255),`bookmarker` varchar(255),`epoch_date_time` varchar(255),`created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY (`id`));")
 
     def check(self):
         mydb = mysql.connector.connect(
@@ -72,7 +72,7 @@ class DbManager:
             database = self.database,
             port = self.port
         )
-        sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         if len(odds_list) > 0:
             # mycursor = mydb.cursor()
             mycursor = self.mydb.cursor()
@@ -82,7 +82,7 @@ class DbManager:
             print(mycursor.rowcount, "was inserted")
     
     def insert_row(self, odds_list):
-        sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
         mycursor.execute(sql, odds_list)
@@ -91,7 +91,7 @@ class DbManager:
         print(mycursor.rowcount, "was inserted")
 
     def start(self):
-        # self.drop_table()
+        self.drop_table()
         self.create_table()
         self.check()
         self.get_data()

@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 from datetime import datetime
 from translate import Translator
+from db_manager import DbManager
 
 class BetaLand:
 
@@ -16,6 +17,7 @@ class BetaLand:
 
 	def __init__(self):
 		self.total_counts = 0
+		self.db_manager = DbManager()
 		self.odds_list = []
 
 	def convert_date(self, txt):
@@ -81,11 +83,13 @@ class BetaLand:
 				print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betaland")
 				if self.total_counts == 200:
-					# self.db_manager.insert_data(self.odds_list)
+					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
 					self.total_counts = 0
-				self.odds_list.append(row)
-				self.total_counts = self.total_counts + 1
+				if team1 != "" and team2 != "":
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					self.odds_list.append(row)
+					self.total_counts = self.total_counts + 1
 			sub_item.click()
 
 	def main(self):
@@ -98,20 +102,18 @@ class BetaLand:
 		footer = self.driver.find_element(By.ID, "blocco-tasti-bottom")
 		footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", footer)
 
-		# Get last menu item for expand and click
 		soccer_menu = self.driver.find_element(By.ID, "sport-1")
 		soccer_menu.click()
 		soccer_sidebar = self.driver.find_element(By.ID, "menu-sport-1")
 		sport_list = soccer_sidebar.find_elements(By.XPATH, "div[contains(@class, 'regione-widget')]")
 		time.sleep(2)
-		print(len(sport_list))
 		# time.sleep(200)
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
-		# self.db_manager.insert_data(self.odds_list)
+		self.db_manager.insert_data(self.odds_list)
 		# self.driver.quit()
-		# self.driver.close()
+		self.driver.close()
 
 if __name__ == "__main__":
 	betaland = BetaLand()
