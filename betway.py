@@ -146,7 +146,7 @@ class BetWay:
 		# self.driver.quit()
 		# self.driver.close()
 	def run(self):
-		threading.Timer(2400, self.run).start()
+		threading.Timer(3600, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
 		print("BetWay =======> ", self.total_counts, "Matches Saved")
 		self.total_counts = 0

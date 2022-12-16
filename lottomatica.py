@@ -79,17 +79,24 @@ class LottoMatica:
 				ng = ""
 				odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
 				if len(odd_info) > 2:
-					first = odd_info[0].get_attribute("innerHTML")
-					draw = odd_info[1].get_attribute("innerHTML")
-					second = odd_info[2].get_attribute("innerHTML")
+					if odd_info[0].get_attribute("innerHTML"):
+						first = odd_info[0].get_attribute("innerHTML")
+					if odd_info[1].get_attribute("innerHTML"):
+						draw = odd_info[1].get_attribute("innerHTML")
+					if odd_info[2].get_attribute("innerHTML"):
+						second = odd_info[2].get_attribute("innerHTML")
 				uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
 				if len(uo_info) > 1:
-					under = uo_info[0].get_attribute("innerHTML")
-					over = uo_info[1].get_attribute("innerHTML")
+					if uo_info[0].get_attribute("innerHTML"):
+						under = uo_info[0].get_attribute("innerHTML")
+					if uo_info[1].get_attribute("innerHTML"):
+						over = uo_info[1].get_attribute("innerHTML")
 				gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
 				if len(gol_info) > 1:
-					gg = gol_info[0].get_attribute("innerHTML")
-					ng = gol_info[1].get_attribute("innerHTML")
+					if gol_info[0].get_attribute("innerHTML"):
+						gg = gol_info[0].get_attribute("innerHTML")
+					if gol_info[1].get_attribute("innerHTML"):
+						ng = gol_info[1].get_attribute("innerHTML")
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
 				# if self.total_counts == 50:
 				# 	self.db_manager.insert_data(self.odds_list)
@@ -138,7 +145,7 @@ class LottoMatica:
 		# self.driver.close()
 
 	def run(self):
-		threading.Timer(2400, self.run).start()
+		threading.Timer(3600, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
 		print("LottoMatica =======> ", self.total_counts, "Matches Saved")
 		self.total_counts = 0

@@ -140,7 +140,7 @@ class EuroBet:
 		# self.driver.close()
 
 	def run(self):
-		threading.Timer(2400, self.run).start()
+		threading.Timer(3600, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
 		print("EuroBet =======> ", self.total_counts, "Matches Saved")
 		self.total_counts = 0
