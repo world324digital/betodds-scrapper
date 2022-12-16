@@ -24,6 +24,19 @@ class BetWay:
 		self.odds_list = []
 
 	def convert_date(self, txt):
+		result = txt.replace("Gennaio", "January")
+		result = result.replace("Febbraio", "Feburary")
+		result = result.replace("Marzo", "March")
+		result = result.replace("Aprile", "April")
+		result = result.replace("Maggio", "May")
+		result = result.replace("Giugno", "June")
+		result = result.replace("Luglio", "July")
+		result = result.replace("Agosto", "August")
+		result = result.replace("Settembre", "September")
+		result = result.replace("Ottobre", "October")
+		result = result.replace("Novembre", "November")
+		result = result.replace("Dicembre", "December")
+		return result
 		splited_txt = txt.split(" ")
 		day = splited_txt[0]
 		translator = Translator(from_lang="italian", to_lang="english")
@@ -108,6 +121,7 @@ class BetWay:
 			cg_footer = self.driver.find_element(By.ID, "cg-footer")
 			cg_footer = self.driver.execute_script("arguments[0].style.width = '0px'; return arguments[0];", cg_footer)
 
+		self.epoch = self.epoch + 1
 		soccer_menu = self.driver.find_element(By.ID, "sport-1")
 		soccer_menu.click()
 		soccer_sidebar = self.driver.find_element(By.ID, "menu-sport-1")
@@ -119,16 +133,16 @@ class BetWay:
 			item = sport_list[i]
 			self.fetch_data(item)
 		self.db_manager.insert_data(self.odds_list)
+		self.odds_list = []
+		self.total_counts = 0
 		# self.driver.quit()
 		# self.driver.close()
-
-    def run(self):
-        threading.Timer(1800, self.run).start()
-        now_time = datetime.fromtimestamp(time.time())
-        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-        print(self.epoch, self.epoch_time)
-        self.main()
-        self.epoch = self.epoch + 1
+	def run(self):
+		threading.Timer(2400, self.run).start()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
+		self.main()
 
 if __name__ == "__main__":
 	betway = BetWay()

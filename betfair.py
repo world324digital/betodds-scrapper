@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import threading
+from datetime import datetime
 from db_manager import DbManager
 
 class BetFair:
@@ -82,6 +83,7 @@ class BetFair:
             time.sleep(3)
             close_btn = self.driver.find_element(By.ID, "onetrust-accept-btn-handler")
             close_btn.click()
+        self.epoch = self.epoch + 1
         time.sleep(3)
         soccer_menu = self.driver.find_element(By.XPATH, "//div[@class='chooser-container']//div[contains(@class, 'ui-toggle-button-options')]/span[contains(@class, 'ui-toggle-button-option')][2]/a")
         soccer_menu.click()
@@ -92,16 +94,17 @@ class BetFair:
             item = sport_list[i]
             self.fetch_data(item)
         self.db_manager.insert_data(self.odds_list)
+        self.odds_list = []
+        self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 
     def run(self):
-        threading.Timer(1800, self.run).start()
+        threading.Timer(2400, self.run).start()
         now_time = datetime.fromtimestamp(time.time())
         self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
         print(self.epoch, self.epoch_time)
         self.main()
-        self.epoch = self.epoch + 1
 
 if __name__ == "__main__":
     betfair = BetFair()

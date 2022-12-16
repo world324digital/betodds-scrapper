@@ -113,6 +113,7 @@ class PlanetWin:
 			self.driver1.execute_script("arguments[0].click();", soccer_menu)
 			soccer_sidebar = soccer_menu.find_element(By.XPATH, "..")
 			sport_list = soccer_sidebar.find_elements(By.XPATH, "ul/li")
+		self.epoch = self.epoch + 1
 		if len(sport_list) > 0:
 			first_link = sport_list[0].find_element(By.XPATH, "ul/li[1]/a")
 			href = first_link.get_attribute("href")
@@ -130,15 +131,16 @@ class PlanetWin:
 				item = sport_list[i]
 				self.fetch_data(item)
 			self.db_manager.insert_data(self.odds_list)
+			self.odds_list = []
+			self.total_counts = 0
 		# self.driver.quit()
 
-    def run(self):
-        threading.Timer(1800, self.run).start()
-        now_time = datetime.fromtimestamp(time.time())
-        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-        print(self.epoch, self.epoch_time)
-        self.main()
-        self.epoch = self.epoch + 1
+	def run(self):
+		threading.Timer(2400, self.run).start()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
+		self.main()
 
 if __name__ == "__main__":
 	planetwin = PlanetWin()

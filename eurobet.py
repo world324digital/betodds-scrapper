@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import threading
+from datetime import datetime
 from db_manager import DbManager
 
 class EuroBet:
@@ -21,15 +22,15 @@ class EuroBet:
 		self.total_counts = 0
 
 	def fetch_data(self, item):
-		# item.click()
-		self.driver.execute_script("arguments[0].click();", item)
+		item.click()
+		# self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.find_element(By.XPATH, "a/h4").text
 		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul[@class='sidebar-league']/li")
 		for sub_item in sub_list:
-			# sub_item.click()
-			self.driver.execute_script("arguments[0].click();", sub_item)
+			sub_item.click()
+			# self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.find_element(By.XPATH, "a/h4").text
 			# print("--- " + sub_title)
 			time.sleep(3)
@@ -106,6 +107,7 @@ class EuroBet:
 			close_btn = self.driver.find_elements(By.CLASS_NAME, "onetrust-close-btn-handler")[0]
 			close_btn.click()
 		time.sleep(1)
+		self.epoch = self.epoch + 1
 		soccer_sidebar = self.driver.find_elements(By.CLASS_NAME, "sidebar-competition")[1]
 
 		# Get last menu item for expand and click
@@ -123,17 +125,18 @@ class EuroBet:
 			self.fetch_data(item)
 		# print(self.odds_list)
 		self.db_manager.insert_data(self.odds_list)
+		self.odds_list = []
+		self.total_counts = 0
 		# self.db_manager.get_data()
 		# self.driver.quit()
 		# self.driver.close()
 
-    def run(self):
-        threading.Timer(1800, self.run).start()
-        now_time = datetime.fromtimestamp(time.time())
-        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-        print(self.epoch, self.epoch_time)
-        self.main()
-        self.epoch = self.epoch + 1
+	def run(self):
+		threading.Timer(2400, self.run).start()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
+		self.main()
 
 if __name__ == "__main__":
 	eurobet = EuroBet()

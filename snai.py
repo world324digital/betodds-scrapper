@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+from datetime import datetime
 import threading
 from db_manager import DbManager
 
@@ -119,6 +120,8 @@ class Snai:
             time.sleep(3)
             close_btn = self.driver.find_element(By.ID, "cookie_consent_banner_closer")
             close_btn.click()
+        
+        self.epoch = self.epoch + 1
         soccer_menu = self.driver.find_element(By.ID, "heading_0")
         soccer_menu.click()
         time.sleep(5)
@@ -131,16 +134,17 @@ class Snai:
             # print("===============")
             self.fetch_data(item)
         self.db_manager.insert_data(self.odds_list)
+        self.odds_list = []
+        self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 
     def run(self):
-        threading.Timer(1800, self.run).start()
+        threading.Timer(2400, self.run).start()
         now_time = datetime.fromtimestamp(time.time())
         self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
         print(self.epoch, self.epoch_time)
         self.main()
-        self.epoch = self.epoch + 1
 
 if __name__ == "__main__":
     snai = Snai()

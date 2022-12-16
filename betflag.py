@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import threading
+from datetime import datetime
 from db_manager import DbManager
 
 class BetFlag:
@@ -116,6 +117,7 @@ class BetFlag:
 			time.sleep(10)
 			modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
 			modal_close_btn.click()
+		self.epoch = self.epoch + 1
 		soccer_sidebar = self.driver.find_element(By.ID, "mhs-1")
 
 		# Get last menu item for expand and click
@@ -127,16 +129,17 @@ class BetFlag:
 			item = sport_list[i]
 			self.fetch_data(item)
 		self.db_manager.insert_data(self.odds_list)
+		self.odds_list = []
+		self.total_counts = 0
 		# self.driver.quit()
 		# self.driver.close()
 
-    def run(self):
-        threading.Timer(1800, self.run).start()
-        now_time = datetime.fromtimestamp(time.time())
-        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-        print(self.epoch, self.epoch_time)
-        self.main()
-        self.epoch = self.epoch + 1
+	def run(self):
+		threading.Timer(2400, self.run).start()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
+		self.main()
 
 if __name__ == "__main__":
 	betflag = BetFlag()
