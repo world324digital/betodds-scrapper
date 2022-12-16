@@ -102,7 +102,7 @@ class DbManager:
 
     def start(self):
         # self.drop_table()
-        # self.create_table()
+        self.create_table()
         self.check()
         self.get_data()
         # self.check()
