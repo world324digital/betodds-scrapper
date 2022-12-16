@@ -53,7 +53,7 @@ class DbManager:
         )
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
-        # mycursor.execute("SELECT * FROM `python_odds_table` where `bookmarker` = 'eurobet'")
+        # mycursor.execute("SELECT * FROM `python_odds_table` where `bookmarker` = 'betaland'")
         mycursor.execute("SELECT * FROM `python_odds_table`")
         result = mycursor.fetchall()
         print(len(result))
@@ -92,8 +92,8 @@ class DbManager:
         print(mycursor.rowcount, "was inserted")
 
     def start(self):
-        self.drop_table()
-        self.create_table()
+        # self.drop_table()
+        # self.create_table()
         self.check()
         self.get_data()
         # self.check()

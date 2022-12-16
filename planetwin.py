@@ -88,7 +88,7 @@ class PlanetWin:
 				if len(ng_item) > 0:
 					ng = ng_item[0].get_attribute("data-quota")
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "planetwin365", self.epoch_time)
-				if self.total_counts == 200:
+				if self.total_counts == 50:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
 					self.total_counts = 0

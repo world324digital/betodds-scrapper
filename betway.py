@@ -97,7 +97,7 @@ class BetWay:
 						ng = odd_info.text
 					odd_index = odd_index + 1
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betway", self.epoch_time)
-				if self.total_counts == 200:
+				if self.total_counts == 50:
 					self.db_manager.insert_data(self.odds_list)
 					self.odds_list = []
 					self.total_counts = 0

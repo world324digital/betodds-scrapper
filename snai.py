@@ -104,7 +104,7 @@ class Snai:
                         odd_index = odd_index + 1
                     row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai", self.epoch_time)
                     # self.db_manager.insert_row(row)
-                    if self.total_counts == 200:
+                    if self.total_counts == 50:
                         self.db_manager.insert_data(self.odds_list)
                         self.odds_list = []
                         self.total_counts = 0
