@@ -42,6 +42,7 @@ class EuroBet:
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[@class='discipline-football']/div[@class='anti-row']//div[@class='event-row']")
 			# print(len(match_list))
+			temp_list = []
 			for match_item in match_list:
 				time_info = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-info']//div[contains(@class,'time-box')]//p")
 				event_date = ""
@@ -104,9 +105,11 @@ class EuroBet:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					# self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
-					self.insert_row(row)
+					# self.insert_row(row)
+					temp_list.append(row)
 					self.total_counts = self.total_counts + 1
 				# print(self.total_counts, "matches fetched", end="\r")
+			self.insert_data(temp_list)
 
 	def main(self):
 		self.driver.get("https://www.eurobet.it/scommesse/")
@@ -161,6 +164,21 @@ class EuroBet:
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
 		mycursor.close()
+
+	def insert_data(self, odds_list):
+		if len(odds_list) > 0:
+			mydb = mysql.connector.connect(
+				host = self.host,
+				user = self.user,
+				password = self.password,
+				database = self.database,
+				port = self.port
+			)
+			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			mycursor = mydb.cursor()
+			mycursor.executemany(sql, odds_list)
+			mydb.commit()
+			mycursor.close()
 
 if __name__ == "__main__":
 	eurobet = EuroBet()

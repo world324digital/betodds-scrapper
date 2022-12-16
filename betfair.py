@@ -31,6 +31,7 @@ class BetFair:
         link_menu = item.find_element(By.XPATH, "div/span[@class = 'section-header-label']/span[@class = 'section-header-title']")
         list_title = link_menu.text
         # print(list_title)
+        temp_list = []
         match_list = item.find_elements(By.XPATH, "ul[contains(@class, 'event-list')]/li")
         for match_item in match_list:
             time_element = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-inplay')]//span[contains(@class, 'date')]")
@@ -59,7 +60,7 @@ class BetFair:
             uo_odds = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-markets')]//div[contains(@class, 'details-market market-2-runners')]/div[contains(@class, 'runner-list')]//li")
             odd_index = 0
             for odd_item in odds:
-                odd_info = odd_item.find_elements(By.XPATH, "a")
+                odd_info = odd_item.find_elements(By.XPATH, "a/span")
                 if len(odd_info) > 0:
                     if odd_index == 0:
                         first = odd_info[0].text
@@ -70,7 +71,7 @@ class BetFair:
                 odd_index = odd_index + 1
             odd_index = 0
             for odd_item in uo_odds:
-                odd_info = odd_item.find_elements(By.XPATH, "a")
+                odd_info = odd_item.find_elements(By.XPATH, "a/span")
                 if len(odd_info) > 0:
                     if odd_index == 0:
                         over = odd_info[0].text
@@ -81,12 +82,14 @@ class BetFair:
             row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair", self.epoch_time)
             # self.odds_list.append(row)
             # self.db_manager.insert_row(row)
-            self.insert_row(row)
+            # self.insert_row(row)
+            temp_list.append(row)
             self.total_counts = self.total_counts + 1
             # print(self.total_counts, "matches fetched", end="\r")
+        self.insert_data(temp_list)
 
     def main(self):
-        self.driver.get("https://www.betfair.com/sport/football")
+        self.driver.get("https://www.betfair.it/sport/football")
         if self.epoch == 1:
             time.sleep(3)
             close_btn = self.driver.find_element(By.ID, "onetrust-accept-btn-handler")
@@ -129,6 +132,21 @@ class BetFair:
         mycursor.execute(sql, odds_list)
         mydb.commit()
         mycursor.close()
+
+    def insert_data(self, odds_list):
+        if len(odds_list) > 0:
+            mydb = mysql.connector.connect(
+                host = self.host,
+                user = self.user,
+                password = self.password,
+                database = self.database,
+                port = self.port
+            )
+            sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            mycursor = mydb.cursor()
+            mycursor.executemany(sql, odds_list)
+            mydb.commit()
+            mycursor.close()
 
 if __name__ == "__main__":
     betfair = BetFair()

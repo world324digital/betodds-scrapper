@@ -51,6 +51,7 @@ class PlanetWin:
 			match_list = self.driver.find_elements(By.XPATH, "//tr[@class='dgAItem']")
 			time.sleep(3)
 			# print(len(match_list))
+			temp_list = []
 			for match_item in match_list:
 				time_info = match_item.get_attribute("data-datainizio").split("+")[0].split("T")
 				event_date = ""
@@ -102,9 +103,11 @@ class PlanetWin:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					# self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
-					self.insert_row(row)
+					# self.insert_row(row)
+					temp_list.append(row)
 					self.total_counts = self.total_counts + 1
 			time.sleep(1)
+			self.insert_data(temp_list)
 			self.driver.execute_script("arguments[0].click();", sub_link_item)
 			# sub_link_item.click()
 
@@ -165,6 +168,21 @@ class PlanetWin:
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
 		mycursor.close()
+
+	def insert_data(self, odds_list):
+		if len(odds_list) > 0:
+			mydb = mysql.connector.connect(
+				host = self.host,
+				user = self.user,
+				password = self.password,
+				database = self.database,
+				port = self.port
+			)
+			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			mycursor = mydb.cursor()
+			mycursor.executemany(sql, odds_list)
+			mydb.commit()
+			mycursor.close()
 
 if __name__ == "__main__":
 	planetwin = PlanetWin()

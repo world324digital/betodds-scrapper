@@ -55,6 +55,7 @@ class GoldBet:
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
 			time.sleep(3)
+			temp_list = []
 			# print(len(match_list))
 			for match_item in match_list:
 				time_info = match_item.get_attribute("data-evndate").split(" ")
@@ -78,25 +79,25 @@ class GoldBet:
 				gg = ""
 				ng = ""
 				odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
-				if len(odd_info) > 2:
-					if odd_info[0].get_attribute("innerHTML"):
-						first = odd_info[0].get_attribute("innerHTML")
-					if odd_info[1].get_attribute("innerHTML"):
-						draw = odd_info[1].get_attribute("innerHTML")
-					if odd_info[2].get_attribute("innerHTML"):
-						second = odd_info[2].get_attribute("innerHTML")
+				for item in odd_info:
+					if item.get_attribute("data-selname") == "1":
+						first = item.text
+					if item.get_attribute("data-selname") == "X":
+						draw = item.text
+					if item.get_attribute("data-selname") == "2":
+						second = item.text
 				uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
-				if len(uo_info) > 1:
-					if uo_info[0].get_attribute("innerHTML"):
-						under = uo_info[0].get_attribute("innerHTML")
-					if uo_info[1].get_attribute("innerHTML"):
-						over = uo_info[1].get_attribute("innerHTML")
+				for item in uo_info:
+					if item.get_attribute("data-selname") == "U":
+						under = item.text
+					if item.get_attribute("data-selname") == "O":
+						over = item.text
 				gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
-				if len(gol_info) > 1:
-					if gol_info[0].get_attribute("innerHTML"):
-						gg = gol_info[0].get_attribute("innerHTML")
-					if gol_info[1].get_attribute("innerHTML"):
-						ng = gol_info[1].get_attribute("innerHTML")
+				for item in gol_info:
+					if item.get_attribute("data-selname") == "GG":
+						gg = item.text
+					if item.get_attribute("data-selname") == "NG":
+						ng = item.text
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "goldbet", self.epoch_time)
 				# if self.total_counts == 50:
 				# 	self.db_manager.insert_data(self.odds_list)
@@ -106,12 +107,14 @@ class GoldBet:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
 					# self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
-					self.insert_row(row)
+					# self.insert_row(row)
+					temp_list.append(row)
 					self.total_counts = self.total_counts + 1
 			loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
 			if len(loading_element) > 0:
 				print(loading_element.get_attribute("outerHTML"))
 			time.sleep(1)
+			self.insert_data(temp_list)
 			self.driver.execute_script("arguments[0].click();", sub_link_item)
 			# sub_link_item.click()
 			# sub_click_item.click()
@@ -166,6 +169,21 @@ class GoldBet:
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
 		mycursor.close()
+
+	def insert_data(self, odds_list):
+		if len(odds_list) > 0:
+			mydb = mysql.connector.connect(
+				host = self.host,
+				user = self.user,
+				password = self.password,
+				database = self.database,
+				port = self.port
+			)
+			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			mycursor = mydb.cursor()
+			mycursor.executemany(sql, odds_list)
+			mydb.commit()
+			mycursor.close()
 
 if __name__ == "__main__":
 	goldbet = GoldBet()

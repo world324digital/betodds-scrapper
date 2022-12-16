@@ -63,6 +63,7 @@ class BetWay:
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'contenitore-table-grande')]//div[contains(@class, 'contenitore-table')]/div[contains(@class, 'contenitoreRiga')]")
 			# print(len(match_list))
+			temp_list = []
 			for match_item in match_list:
 				time_info = match_item.find_element(By.XPATH, "div[contains(@class, 'tabellaQuoteNew')]/div[contains(@class, 'tabellaQuoteTempo')]")
 				date_string = self.convert_date(time_info.find_element(By.XPATH, "//span[contains(@class, 'tabellaQuoteTempo__data')]").get_attribute("innerHTML").split(" ", 1)[1])
@@ -111,8 +112,10 @@ class BetWay:
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
 					# self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
-					self.insert_row(row)
+					temp_list.append(row)
+					# self.insert_row(row)
 					self.total_counts = self.total_counts + 1
+			self.insert_data(temp_list)
 			sub_item.click()
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 
@@ -167,6 +170,21 @@ class BetWay:
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
 		mycursor.close()
+
+	def insert_data(self, odds_list):
+		if len(odds_list) > 0:
+			mydb = mysql.connector.connect(
+				host = self.host,
+				user = self.user,
+				password = self.password,
+				database = self.database,
+				port = self.port
+			)
+			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			mycursor = mydb.cursor()
+			mycursor.executemany(sql, odds_list)
+			mydb.commit()
+			mycursor.close()
 
 if __name__ == "__main__":
 	betway = BetWay()
