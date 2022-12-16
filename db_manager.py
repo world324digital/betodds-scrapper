@@ -65,13 +65,13 @@ class DbManager:
         mycursor.execute("DROP TABLE `python_odds_table`")
 
     def insert_data(self, odds_list):
-        mydb = mysql.connector.connect(
-            host = self.host,
-            user = self.user,
-            password = self.password,
-            database = self.database,
-            port = self.port
-        )
+        # mydb = mysql.connector.connect(
+        #     host = self.host,
+        #     user = self.user,
+        #     password = self.password,
+        #     database = self.database,
+        #     port = self.port
+        # )
         sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         if len(odds_list) > 0:
             # mycursor = mydb.cursor()
@@ -79,17 +79,26 @@ class DbManager:
             mycursor.executemany(sql, odds_list)
             # mydb.commit()
             self.mydb.commit()
+            mycursor.close()
             print(odds_list[0][-2])
             print(mycursor.rowcount, "was inserted")
     
     def insert_row(self, odds_list):
+        # mydb = mysql.connector.connect(
+        #     host = self.host,
+        #     user = self.user,
+        #     password = self.password,
+        #     database = self.database,
+        #     port = self.port
+        # )
         sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
         mycursor.execute(sql, odds_list)
         # mydb.commit()
         self.mydb.commit()
-        print(mycursor.rowcount, "was inserted")
+        mycursor.close()
+        # print(mycursor.rowcount, "was inserted")
 
     def start(self):
         # self.drop_table()

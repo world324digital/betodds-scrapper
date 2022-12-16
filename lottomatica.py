@@ -30,7 +30,7 @@ class LottoMatica:
 		self.driver.execute_script("arguments[0].click();", link_click_item)
 		link_item = item.find_element(By.XPATH, "a/div/span[last()]")
 		list_title = link_item.text
-		print(list_title)
+		# print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul/li")
 		for sub_item in sub_list:
@@ -40,7 +40,7 @@ class LottoMatica:
 			sub_title = sub_link_item.text
 			if sub_title == "":
 				sub_title = sub_link_item.get_attribute("innerHTML")
-			print("--- " + sub_title)
+			# print("--- " + sub_title)
 			loading = 1
 			while loading == 1:
 				loading_element = self.driver.find_element(By.ID, "spinner-loading")
@@ -72,23 +72,27 @@ class LottoMatica:
 				gg = ""
 				ng = ""
 				odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
-				first = odd_info[0].text
-				draw = odd_info[1].text
-				second = odd_info[2].text
+				if len(odd_info) > 2:
+					first = odd_info[0].text
+					draw = odd_info[1].text
+					second = odd_info[2].text
 				uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
-				under = uo_info[0].text
-				over = uo_info[1].text
+				if len(uo_info) > 1:
+					under = uo_info[0].text
+					over = uo_info[1].text
 				gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
-				gg = gol_info[0].text
-				ng = gol_info[1].text
+				if len(gol_info) > 1:
+					gg = gol_info[0].text
+					ng = gol_info[1].text
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
-				if self.total_counts == 50:
-					self.db_manager.insert_data(self.odds_list)
-					self.odds_list = []
-					self.total_counts = 0
+				# if self.total_counts == 50:
+				# 	self.db_manager.insert_data(self.odds_list)
+				# 	self.odds_list = []
+				# 	self.total_counts = 0
 				if team1 != "" and team2 != "":
-					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-					self.odds_list.append(row)
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					# self.odds_list.append(row)
+					self.db_manager.insert_row(row)
 					self.total_counts = self.total_counts + 1
 			loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
 			if len(loading_element) > 0:
@@ -120,15 +124,17 @@ class LottoMatica:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
-		self.db_manager.insert_data(self.odds_list)
-		self.odds_list = []
-		self.total_counts = 0
+		# self.db_manager.insert_data(self.odds_list)
+		# self.odds_list = []
+		# self.total_counts = 0
 		# self.driver.quit()
 		# self.driver.close()
 
 	def run(self):
 		threading.Timer(2400, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
+		print("LottoMatica =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
 		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		print(self.epoch, self.epoch_time)
 		self.main()

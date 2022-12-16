@@ -71,9 +71,10 @@ class BetFair:
                     elif odd_index == 1:
                         under = odd_info[0].text
                 odd_index = odd_index + 1
-            # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+            print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
             row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair", self.epoch_time)
-            self.odds_list.append(row)
+            # self.odds_list.append(row)
+            self.db_manager.insert_row(row)
             self.total_counts = self.total_counts + 1
             # print(self.total_counts, "matches fetched", end="\r")
 
@@ -93,15 +94,17 @@ class BetFair:
         for i in range(len(sport_list)):
             item = sport_list[i]
             self.fetch_data(item)
-        self.db_manager.insert_data(self.odds_list)
-        self.odds_list = []
-        self.total_counts = 0
+        # self.db_manager.insert_data(self.odds_list)
+        # self.odds_list = []
+        # self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 
     def run(self):
         threading.Timer(2400, self.run).start()
         now_time = datetime.fromtimestamp(time.time())
+        print("BetFair =======> ", self.total_counts, "Matches Saved")
+        self.total_counts = 0
         self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
         print(self.epoch, self.epoch_time)
         self.main()

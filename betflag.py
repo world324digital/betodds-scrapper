@@ -98,13 +98,14 @@ class BetFlag:
 							over = odd_item.get_attribute("c_quo")
 					odd_index = odd_index + 1
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betflag", self.epoch_time)
-				if self.total_counts == 50:
-					self.db_manager.insert_data(self.odds_list)
-					self.odds_list = []
-					self.total_counts = 0
+				# if self.total_counts == 50:
+				# 	self.db_manager.insert_data(self.odds_list)
+				# 	self.odds_list = []
+				# 	self.total_counts = 0
 				if team1 != "" and team2 != "":
-					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
-					self.odds_list.append(row)
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+					# self.odds_list.append(row)
+					self.db_manager.insert_row(row)
 					self.total_counts = self.total_counts + 1
 			sub_item.click()
 			# self.driver.execute_script("arguments[0].click();", sub_item)
@@ -114,9 +115,10 @@ class BetFlag:
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.ID, "LinkButton2")
 			cookie_close_btn.click()
-			time.sleep(10)
-			modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
-			modal_close_btn.click()
+		time.sleep(10)
+		modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
+		if modal_close_btn:
+				modal_close_btn.click()
 		self.epoch = self.epoch + 1
 		soccer_sidebar = self.driver.find_element(By.ID, "mhs-1")
 
@@ -128,15 +130,17 @@ class BetFlag:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
-		self.db_manager.insert_data(self.odds_list)
-		self.odds_list = []
-		self.total_counts = 0
+		# self.db_manager.insert_data(self.odds_list)
+		# self.odds_list = []
+		# self.total_counts = 0
 		# self.driver.quit()
 		# self.driver.close()
 
 	def run(self):
 		threading.Timer(2400, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
+		print("BetFlag =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
 		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		print(self.epoch, self.epoch_time)
 		self.main()

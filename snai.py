@@ -104,13 +104,14 @@ class Snai:
                         odd_index = odd_index + 1
                     row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "snai", self.epoch_time)
                     # self.db_manager.insert_row(row)
-                    if self.total_counts == 50:
-                        self.db_manager.insert_data(self.odds_list)
-                        self.odds_list = []
-                        self.total_counts = 0
+                    # if self.total_counts == 50:
+                    #     self.db_manager.insert_data(self.odds_list)
+                    #     self.odds_list = []
+                    #     self.total_counts = 0
                     if team1 != "" and team2 != "":
-                        # print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
-                        self.odds_list.append(row)
+                        print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
+                        # self.odds_list.append(row)
+                        self.db_manager.insert_row(row)
                         self.total_counts = self.total_counts + 1
                     # print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
 
@@ -133,15 +134,17 @@ class Snai:
             # print(item.get_attribute("outerHTML"))
             # print("===============")
             self.fetch_data(item)
-        self.db_manager.insert_data(self.odds_list)
-        self.odds_list = []
-        self.total_counts = 0
+        # self.db_manager.insert_data(self.odds_list)
+        # self.odds_list = []
+        # self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 
     def run(self):
         threading.Timer(2400, self.run).start()
         now_time = datetime.fromtimestamp(time.time())
+        print("Snai =======> ", self.total_counts, "Matches Saved")
+        self.total_counts = 0
         self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
         print(self.epoch, self.epoch_time)
         self.main()

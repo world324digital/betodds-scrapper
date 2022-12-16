@@ -30,7 +30,7 @@ class PlanetWin:
 		list_title = link_item.text
 		if self.total_counts > 0:
 			self.driver.execute_script("arguments[0].click();", link_item)
-		print(list_title)
+		# print(list_title)
 		time.sleep(1)
 		sub_list = item.find_elements(By.XPATH, "ul/li")
 		for sub_item in sub_list:
@@ -40,7 +40,7 @@ class PlanetWin:
 			if self.total_counts > 0:
 				self.driver.execute_script("arguments[0].click();", sub_link_item)
 			# sub_link_item.click()
-			print("--- " + sub_title)
+			# print("--- " + sub_title)
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//tr[@class='dgAItem']")
 			time.sleep(3)
@@ -88,13 +88,14 @@ class PlanetWin:
 				if len(ng_item) > 0:
 					ng = ng_item[0].get_attribute("data-quota")
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "planetwin365", self.epoch_time)
-				if self.total_counts == 50:
-					self.db_manager.insert_data(self.odds_list)
-					self.odds_list = []
-					self.total_counts = 0
+				# if self.total_counts == 50:
+				# 	self.db_manager.insert_data(self.odds_list)
+				# 	self.odds_list = []
+				# 	self.total_counts = 0
 				if team1 != "" and team2 != "":
-					# print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-					self.odds_list.append(row)
+					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+					# self.odds_list.append(row)
+					self.db_manager.insert_row(row)
 					self.total_counts = self.total_counts + 1
 			time.sleep(1)
 			self.driver.execute_script("arguments[0].click();", sub_link_item)
@@ -130,14 +131,16 @@ class PlanetWin:
 			for i in range(len(sport_list)):
 				item = sport_list[i]
 				self.fetch_data(item)
-			self.db_manager.insert_data(self.odds_list)
-			self.odds_list = []
-			self.total_counts = 0
+			# self.db_manager.insert_data(self.odds_list)
+			# self.odds_list = []
+			# self.total_counts = 0
 		# self.driver.quit()
 
 	def run(self):
 		threading.Timer(2400, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
+		print("PlanetWin =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
 		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		print(self.epoch, self.epoch_time)
 		self.main()
