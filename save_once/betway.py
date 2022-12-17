@@ -15,8 +15,8 @@ class BetWay:
 	options = Options()
 	options.add_argument("start-maximized")
 	options.add_argument("ignore-certificate-errors")
-	options.add_argument("headless")
-	options.add_argument("window-size=1200x600")
+	# options.add_argument("headless")
+	# options.add_argument("window-size=1200x600")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 	def __init__(self, epoch = 1, epoch_time = ""):
@@ -171,7 +171,7 @@ class BetWay:
 		    database = self.database,
 		    port = self.port
 		)
-		sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		sql = "INSERT INTO `python_odds_table_new` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 		mycursor = mydb.cursor()
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
@@ -186,12 +186,12 @@ class BetWay:
 				database = self.database,
 				port = self.port
 			)
-			sql = "DELETE FROM customers WHERE address = 'Mountain 21'"
+			sql = "UPDATE `python_odds_table_new` SET `deleted_at` = CURRENT_TIMESTAMP WHERE `bookmarker` = '" + odds_list[0][-2] + "';"
 			mycursor = mydb.cursor()
 			mycursor.execute(sql)
 			mydb.commit()
 			mycursor.close()
-			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			sql = "INSERT INTO `python_odds_table_new` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 			mycursor = mydb.cursor()
 			mycursor.executemany(sql, odds_list)
 			mydb.commit()

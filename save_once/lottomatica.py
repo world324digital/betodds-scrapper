@@ -81,26 +81,27 @@ class LottoMatica:
 					over = ""
 					gg = ""
 					ng = ""
-					odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
-					for odd_item in odd_info:
-						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "1":
-							first = odd_item.get_attribute("innerHTML").replace(" ", "")
-						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "X":
-							draw = odd_item.get_attribute("innerHTML").replace(" ", "")
-						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "2":
-							second = odd_item.get_attribute("innerHTML").replace(" ", "")
-					uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
-					for uo_item in uo_info:
-						if uo_item.get_attribute("data-selname") and uo_item.get_attribute("data-selname") == "U":
-							under = uo_item.get_attribute("innerHTML").replace(" ", "")
-						if uo_item.get_attribute("data-selname") and uo_item.get_attribute("data-selname") == "O":
-							over = uo_item.get_attribute("innerHTML").replace(" ", "")
-					gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
-					for gol_item in gol_info:
-						if gol_item.get_attribute("data-selname") and gol_item.get_attribute("data-selname") == "GG":
-							gg = gol_item.get_attribute("innerHTML").replace(" ", "")
-						if gol_item.get_attribute("data-selname") and gol_item.get_attribute("data-selname") == "NG":
-							ng = gol_item.get_attribute("innerHTML").replace(" ", "")
+					first_element = match_item.find_elements(By.XPATH, "//span[@data-selname='1']")
+					draw_element = match_item.find_elements(By.XPATH, "//span[@data-selname='X']")
+					second_element = match_item.find_elements(By.XPATH, "//span[@data-selname='2']")
+					under_element = match_item.find_elements(By.XPATH, "//span[@data-selname='U']")
+					over_element = match_item.find_elements(By.XPATH, "//span[@data-selname='O']")
+					gg_element = match_item.find_elements(By.XPATH, "//span[@data-selname='GG']")
+					ng_element = match_item.find_elements(By.XPATH, "//span[@data-selname='NG']")
+					if len(first_element) > 0:
+						first = first_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(draw_element) > 0:
+						draw = draw_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(second_element) > 0:
+						second = second_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(under_element) > 0:
+						under = under_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(over_element) > 0:
+						over = over_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(gg_element) > 0:
+						gg = gg_element[0].get_attribute("innerHTML").replace(" ", "")
+					if len(ng_element) > 0:
+						ng = ng_element[0].get_attribute("innerHTML").replace(" ", "")
 					row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
 					# if self.total_counts == 50:
 					# 	self.db_manager.insert_data(self.odds_list)
@@ -171,7 +172,7 @@ class LottoMatica:
 		    database = self.database,
 		    port = self.port
 		)
-		sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		sql = "INSERT INTO `python_odds_table_new` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 		mycursor = mydb.cursor()
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
@@ -186,7 +187,12 @@ class LottoMatica:
 				database = self.database,
 				port = self.port
 			)
-			sql = "INSERT INTO `python_odds_table` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+			sql = "UPDATE `python_odds_table_new` SET `deleted_at` = CURRENT_TIMESTAMP WHERE `bookmarker` = '" + odds_list[0][-2] + "';"
+			mycursor = mydb.cursor()
+			mycursor.execute(sql)
+			mydb.commit()
+			mycursor.close()
+			sql = "INSERT INTO `python_odds_table_new` (`category`, `subcategory`, `team1`, `team2`, `event_date`, `event_time`, `equal`, `first`, `second`, `draw`, `under`, `over`, `gg`, `ng`, `bookmarker`, `epoch_date_time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 			mycursor = mydb.cursor()
 			mycursor.executemany(sql, odds_list)
 			mydb.commit()

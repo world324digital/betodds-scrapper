@@ -27,7 +27,7 @@ class DbManager:
         )
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
-        mycursor.execute("CREATE TABLE IF NOT EXISTS `python_odds_table` (`id` BIGINT(20) NOT NULL AUTO_INCREMENT,`category` varchar(255),`subcategory` varchar(255),`team1` varchar(255),`team2` varchar(255),`event_date` varchar(255),`event_time` varchar(255),`equal` varchar(255),`first` varchar(255),`second` varchar(255),`draw` varchar(255),`under` varchar(255),`over` varchar(255),`gg` varchar(255),`ng` varchar(255),`bookmarker` varchar(255),`epoch_date_time` varchar(255),`created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `deleted_at` TIMESTAMP DEFAULT NULL,PRIMARY KEY (`id`));")
+        mycursor.execute("CREATE TABLE IF NOT EXISTS `python_odds_table` (`id` BIGINT(20) NOT NULL AUTO_INCREMENT,`category` varchar(255),`subcategory` varchar(255),`team1` varchar(255),`team2` varchar(255),`event_date` varchar(255),`event_time` varchar(255),`equal` varchar(255),`first` varchar(255),`second` varchar(255),`draw` varchar(255),`under` varchar(255),`over` varchar(255),`gg` varchar(255),`ng` varchar(255),`bookmarker` varchar(255),`epoch_date_time` varchar(255),`created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `deleted_at` DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,PRIMARY KEY (`id`));")
 
     def check(self):
         mydb = mysql.connector.connect(
@@ -101,11 +101,11 @@ class DbManager:
         # print(mycursor.rowcount, "was inserted")
 
     def start(self):
-        self.drop_table()
+        # self.drop_table()
         self.create_table()
         self.check()
-        row = ("list_title", "sub_title", 'team1', "team2", "event_date", "event_time", "equal", "first", "second", "draw", "under", "over", "gg", "ng", "betway", "self.epoch_time")
-        self.insert_row(row)
+        # row = ("list_title", "sub_title", 'team1', "team2", "event_date", "event_time", "equal", "first", "second", "draw", "under", "over", "gg", "ng", "betway", "self.epoch_time")
+        # self.insert_row(row)
         self.get_data()
         # self.check()
 
