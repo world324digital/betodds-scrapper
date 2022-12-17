@@ -13,6 +13,8 @@ class BetFair:
 
     options = Options()
     options.add_argument("start-maximized")
+    options.add_argument("headless")
+    options.add_argument("window-size=1200x600")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     def __init__(self, epoch = 1, epoch_time = ""):
@@ -20,7 +22,7 @@ class BetFair:
         self.epoch_time = epoch_time
         self.total_counts = 0
         # self.db_manager = DbManager()
-        # self.odds_list = []
+        self.odds_list = []
         self.host = "45.8.227.145"
         self.user = "oddsmatcher"
         self.password = "~exY([5~fjxN"
@@ -36,7 +38,7 @@ class BetFair:
         for match_item in match_list:
             time_element = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-inplay')]//span[contains(@class, 'date')]")
             if len(time_element) > 0:
-                event_date = time_element[0].get_attribute("innerHTML").replace(" ", "")
+                event_date = time_element[0].text
                 event_time = event_date
             else:
                 event_date = ""
@@ -53,21 +55,21 @@ class BetFair:
             ng = ""
             teams = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-runners')]//*[contains(@class, 'team-name')]")
             if len(teams) != 0:
-                team1 = teams[0].get_attribute("innerHTML").replace(" ", "")
-                team2 = teams[1].get_attribute("innerHTML").replace(" ", "")
+                team1 = teams[0].text
+                team2 = teams[1].text
             equal = team1 + " - " + team2
             odds = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-markets')]//div[contains(@class, 'details-market market-3-runners')]/div[contains(@class, 'runner-list')]//li")
             uo_odds = match_item.find_elements(By.XPATH, "div/div[contains(@class, 'avb-col-markets')]//div[contains(@class, 'details-market market-2-runners')]/div[contains(@class, 'runner-list')]//li")
             odd_index = 0
             for odd_item in odds:
                 odd_info = odd_item.find_elements(By.XPATH, "a/span")
-                if len(odd_info) > 0 and odd_info[0].get_attribute("innerHTML") != "":
+                if len(odd_info) > 0 and odd_info[0].text != "":
                     if odd_index == 0:
-                        first = odd_info[0].get_attribute("innerHTML")
+                        first = odd_info[0].text
                     elif odd_index == 1:
-                        draw = odd_info[0].get_attribute("innerHTML")
+                        draw = odd_info[0].text
                     elif odd_index == 2:
-                        second = odd_info[0].get_attribute("innerHTML")
+                        second = odd_info[0].text
                 odd_index = odd_index + 1
             odd_index = 0
             for odd_item in uo_odds:
@@ -80,13 +82,13 @@ class BetFair:
                 odd_index = odd_index + 1
             print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
             row = (list_title, "", team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betfair", self.epoch_time)
-            # self.odds_list.append(row)
+            self.odds_list.append(row)
             # self.db_manager.insert_row(row)
             # self.insert_row(row)
-            temp_list.append(row)
+            # temp_list.append(row)
             self.total_counts = self.total_counts + 1
             # print(self.total_counts, "matches fetched", end="\r")
-        self.insert_data(temp_list)
+        # self.insert_data(temp_list)
 
     def main(self):
         start_time = time.time()
@@ -105,12 +107,12 @@ class BetFair:
         for i in range(len(sport_list)):
             item = sport_list[i]
             self.fetch_data(item)
-        time.sleep(1800)
+        # time.sleep(1800)
+        self.insert_data(self.odds_list)
         print("completed time is ", time.time() - start_time)
         # self.main()
-        # self.db_manager.insert_data(self.odds_list)
-        # self.odds_list = []
-        # self.total_counts = 0
+        self.odds_list = []
+        self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 

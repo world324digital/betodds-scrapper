@@ -13,6 +13,8 @@ class Snai:
 
     options = Options()
     options.add_argument("start-maximized")
+	options.add_argument("headless")
+	options.add_argument("window-size=1200x600")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     def __init__(self, epoch = 1, epoch_time = ""):
@@ -20,7 +22,7 @@ class Snai:
         self.epoch_time = epoch_time
         self.total_counts = 0
         # self.db_manager = DbManager()
-        # self.odds_list = []
+        self.odds_list = []
         self.host = "45.8.227.145"
         self.user = "oddsmatcher"
         self.password = "~exY([5~fjxN"
@@ -40,7 +42,7 @@ class Snai:
             self.driver.execute_script("arguments[0].click();", sub_item)
             sub_title = sub_item.text.replace("&nbsp;", "")
             print("--- " + sub_title)
-            time.sleep(3)
+            # time.sleep(3)
             start_time = time.time()
             delay = 0
             loading = 1
@@ -117,13 +119,13 @@ class Snai:
                     #     self.total_counts = 0
                     if team1 != "" and team2 != "":
                         print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
-                        # self.odds_list.append(row)
+                        self.odds_list.append(row)
                         # self.db_manager.insert_row(row)
                         # self.insert_row(row)
-                        temp_list.append(row)
+                        # temp_list.append(row)
                         self.total_counts = self.total_counts + 1
                     # print(list_title, sub_title, self.total_counts, "matches fetched", end="\r")
-                self.insert_data(temp_list)
+                # self.insert_data(temp_list)
 
     def main(self):
         start_time = time.time()
@@ -145,12 +147,12 @@ class Snai:
             # print(item.get_attribute("outerHTML"))
             # print("===============")
             self.fetch_data(item)
+        self.db_manager.insert_data(self.odds_list)
         print("completed time is ", time.time() - start_time)
-        time.sleep(1800)
+        # time.sleep(1800)
         # self.main()
-        # self.db_manager.insert_data(self.odds_list)
-        # self.odds_list = []
-        # self.total_counts = 0
+        self.odds_list = []
+        self.total_counts = 0
         # self.driver.quit()
         # self.driver.close()
 

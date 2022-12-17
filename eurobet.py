@@ -7,7 +7,7 @@ import time
 import threading
 import mysql.connector
 from datetime import datetime
-from db_manager import DbManager
+# from db_manager import DbManager
 
 class EuroBet:
 	options = Options()
@@ -31,14 +31,14 @@ class EuroBet:
 		item.click()
 		# self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.find_element(By.XPATH, "a/h4").text
-		# print(list_title)
+		print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "ul[@class='sidebar-league']/li")
 		for sub_item in sub_list:
 			sub_item.click()
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.find_element(By.XPATH, "a/h4").text
-			# print("--- " + sub_title)
+			print("--- " + sub_title)
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[@class='discipline-football']/div[@class='anti-row']//div[@class='event-row']")
 			# print(len(match_list))
@@ -58,21 +58,21 @@ class EuroBet:
 				gg = ""
 				ng = ""
 				if len(time_info) == 1:
-					time_string = time_info[0].text
+					time_string = time_info[0].get_attribute("innerHTML").replace(" ", "")
 					if ":" in time_string:
 						event_time = time_string
 					else:
 						event_date = time_string
 				if len(time_info) == 2:
-					event_date = time_info[0].text
-					event_time = time_info[1].text
+					event_date = time_info[0].get_attribute("innerHTML").replace(" ", "")
+					event_time = time_info[1].get_attribute("innerHTML").replace(" ", "")
 				event_players = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-info']//*[@class='event-players']/span/div/a/span")
 				index = 0
 				for player_item in event_players:
 					if index == 0:
-						team1 = player_item.text
+						team1 = player_item.get_attribute("innerHTML").replace(" ", "")
 					if index == 2:
-						team2 = player_item.text
+						team2 = player_item.get_attribute("innerHTML").replace(" ", "")
 					index = index + 1
 				equal = team1 + " - " + team2
 				event_odds = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-odds']//*[@class='quota-new']")
@@ -81,19 +81,19 @@ class EuroBet:
 					odd_info = odd_item.find_elements(By.XPATH, "div/a")
 					if len(odd_info) > 0:
 						if odd_index == 0:
-							first = odd_info[0].text
+							first = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 1:
-							draw = odd_info[0].text
+							draw = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 2:
-							second = odd_info[0].text
+							second = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 3:
-							under = odd_info[0].text
+							under = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 4:
-							over = odd_info[0].text
+							over = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 5:
-							gg = odd_info[0].text
+							gg = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 6:
-							ng = odd_info[0].text
+							ng = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 					odd_index = odd_index + 1
 				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "eurobet", self.epoch_time)
 				# self.db_manager.insert_data(row)
@@ -112,11 +112,7 @@ class EuroBet:
 			self.insert_data(temp_list)
 
 	def main(self):
-		now_time = datetime.fromtimestamp(time.time())
-		print("EuroBet =======> ", self.total_counts, "Matches Saved")
-		self.total_counts = 0
-		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-		print(self.epoch, self.epoch_time)
+		start_time = time.time()
 		self.driver.get("https://www.eurobet.it/scommesse/")
 		if self.epoch == 1:
 			time.sleep(3)
@@ -139,8 +135,9 @@ class EuroBet:
 		for j in range(len(expanded_list) - 1):
 			item = expanded_list[j]
 			self.fetch_data(item)
+		print("completed time is ", time.time() - start_time)
 		time.sleep(1800)
-		self.main()
+		# self.main()
 		# print(self.odds_list)
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []

@@ -9,12 +9,11 @@ import mysql.connector
 from datetime import datetime
 # from db_manager import DbManager
 
-class BetFlag:
-
+class EuroBet:
 	options = Options()
-	sub_list = []
-	match_list = []
 	options.add_argument("start-maximized")
+	options.add_argument("headless")
+	options.add_argument("window-size=1200x600")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 	def __init__(self, epoch = 1, epoch_time = ""):
@@ -22,7 +21,7 @@ class BetFlag:
 		self.epoch_time = epoch_time
 		self.total_counts = 0
 		# self.db_manager = DbManager()
-		# self.odds_list = []
+		self.odds_list = []
 		self.host = "45.8.227.145"
 		self.user = "oddsmatcher"
 		self.password = "~exY([5~fjxN"
@@ -32,30 +31,26 @@ class BetFlag:
 	def fetch_data(self, item):
 		item.click()
 		# self.driver.execute_script("arguments[0].click();", item)
-		list_title = item.find_element(By.XPATH, "a").text
+		list_title = item.find_element(By.XPATH, "a/h4").text
 		print(list_title)
 		time.sleep(3)
-		sub_list = item.find_elements(By.XPATH, "ul/li")
+		sub_list = item.find_elements(By.XPATH, "ul[@class='sidebar-league']/li")
 		for sub_item in sub_list:
 			sub_item.click()
 			# self.driver.execute_script("arguments[0].click();", sub_item)
-			sub_title = sub_item.find_element(By.XPATH, "a").text
+			sub_title = sub_item.find_element(By.XPATH, "a/h4").text
 			print("--- " + sub_title)
 			time.sleep(3)
-			match_list = self.driver.find_elements(By.XPATH, "//div[@class='containerEvents']/div")
+			match_list = self.driver.find_elements(By.XPATH, "//div[@class='discipline-football']/div[@class='anti-row']//div[@class='event-row']")
 			# print(len(match_list))
 			temp_list = []
 			for match_item in match_list:
-				time_info = match_item.get_attribute("c_dat")
-				event_date = time_info.split("T")[0]
-				event_time = time_info.split("T")[1]
-				equal = match_item.get_attribute("c_dav")
-				if len(equal.split(" - ")) > 1:
-					team1 = equal.split(" - ")[0]
-					team2 = equal.split(" - ")[1]
-				else:
-					team1 = ""
-					team2 = ""
+				time_info = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-info']//div[contains(@class,'time-box')]//p")
+				event_date = ""
+				event_time = ""
+				team1 = ""
+				team2 = ""
+				equal = ""
 				first = ""
 				draw = ""
 				second = ""
@@ -63,97 +58,99 @@ class BetFlag:
 				over = ""
 				gg = ""
 				ng = ""
-				event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p1')]//div[contains(@class, 'oddPrematch')]")
+				if len(time_info) == 1:
+					time_string = time_info[0].get_attribute("innerHTML").replace(" ", "")
+					if ":" in time_string:
+						event_time = time_string
+					else:
+						event_date = time_string
+				if len(time_info) == 2:
+					event_date = time_info[0].get_attribute("innerHTML").replace(" ", "")
+					event_time = time_info[1].get_attribute("innerHTML").replace(" ", "")
+				event_players = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-info']//*[@class='event-players']/span/div/a/span")
+				index = 0
+				for player_item in event_players:
+					if index == 0:
+						team1 = player_item.get_attribute("innerHTML").replace(" ", "")
+					if index == 2:
+						team2 = player_item.get_attribute("innerHTML").replace(" ", "")
+					index = index + 1
+				equal = team1 + " - " + team2
+				event_odds = match_item.find_elements(By.XPATH, "*[@class='event-wrapper-odds']//*[@class='quota-new']")
 				odd_index = 0
 				for odd_item in event_odds:
 					odd_info = odd_item.find_elements(By.XPATH, "div/a")
-					locked = 0
-					if 'lock' in odd_item.get_attribute("class").split():
-						locked = 1
-					else:
+					if len(odd_info) > 0:
 						if odd_index == 0:
-							first = odd_item.get_attribute("c_quo")
+							first = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 1:
-							draw = odd_item.get_attribute("c_quo")
+							draw = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 						elif odd_index == 2:
-							second = odd_item.get_attribute("c_quo")
+							second = odd_info[0].get_attribute("innerHTML").replace(" ", "")
+						elif odd_index == 3:
+							under = odd_info[0].get_attribute("innerHTML").replace(" ", "")
+						elif odd_index == 4:
+							over = odd_info[0].get_attribute("innerHTML").replace(" ", "")
+						elif odd_index == 5:
+							gg = odd_info[0].get_attribute("innerHTML").replace(" ", "")
+						elif odd_index == 6:
+							ng = odd_info[0].get_attribute("innerHTML").replace(" ", "")
 					odd_index = odd_index + 1
-				event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p2')]//div[contains(@class, 'oddPrematch')]")
-				odd_index = 0
-				for odd_item in event_odds:
-					odd_info = odd_item.find_elements(By.XPATH, "div/a")
-					locked = 0
-					if 'lock' in odd_item.get_attribute("class").split():
-						locked = 1
-					else:
-						if odd_index == 0:
-							gg = odd_item.get_attribute("c_quo")
-						elif odd_index == 1:
-							ng = odd_item.get_attribute("c_quo")
-					odd_index = odd_index + 1
-				event_odds = match_item.find_elements(By.XPATH, "*[@class='bets']/div[contains(@class, 'odds p3')]//div[contains(@class, 'oddPrematch')]")
-				odd_index = 0
-				for odd_item in event_odds:
-					odd_info = odd_item.find_elements(By.XPATH, "div/a")
-					locked = 0
-					if 'lock' in odd_item.get_attribute("class").split():
-						locked = 1
-					else:
-						if odd_index == 0:
-							under = odd_item.get_attribute("c_quo")
-						elif odd_index == 1:
-							over = odd_item.get_attribute("c_quo")
-					odd_index = odd_index + 1
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "betflag", self.epoch_time)
+				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "eurobet", self.epoch_time)
+				# self.db_manager.insert_data(row)
 				# if self.total_counts == 50:
 				# 	self.db_manager.insert_data(self.odds_list)
 				# 	self.odds_list = []
 				# 	self.total_counts = 0
 				if team1 != "" and team2 != "":
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng + " " + self.epoch_time)
-					# self.odds_list.append(row)
+					self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
-					self.insert_row(row)
-					temp_list.append(row)
+					# self.insert_row(row)
+					# temp_list.append(row)
 					self.total_counts = self.total_counts + 1
-			self.insert_data(temp_list)
-			sub_item.click()
-			# self.driver.execute_script("arguments[0].click();", sub_item)
+				# print(self.total_counts, "matches fetched", end="\r")
+			# self.insert_data(temp_list)
 
 	def main(self):
 		start_time = time.time()
-		self.driver.get("https://www.betflag.it/sport")
+		self.driver.get("https://www.eurobet.it/scommesse/")
 		if self.epoch == 1:
-			cookie_close_btn = self.driver.find_element(By.ID, "LinkButton2")
-			cookie_close_btn.click()
-		time.sleep(10)
-		modal_close_btn = self.driver.find_element(By.XPATH, "//div[@class='btn-close']")
-		if modal_close_btn:
-			modal_close_btn.click()
+			time.sleep(3)
+			close_btn = self.driver.find_elements(By.CLASS_NAME, "onetrust-close-btn-handler")[0]
+			close_btn.click()
+		time.sleep(1)
 		self.epoch = self.epoch + 1
-		soccer_sidebar = self.driver.find_element(By.ID, "mhs-1")
+		soccer_sidebar = self.driver.find_elements(By.CLASS_NAME, "sidebar-competition")[1]
 
 		# Get last menu item for expand and click
-		soccer_menu = soccer_sidebar.find_element(By.XPATH, "a")
-		soccer_menu.click()
-		sport_list = soccer_sidebar.find_elements(By.XPATH, "ul/li")
-		time.sleep(2)
-		for i in range(len(sport_list)):
-			item = sport_list[i]
+		last_menu = soccer_sidebar.find_element(By.XPATH, "div/li[last()]")
+		last_menu.click()
+		sport_list = soccer_sidebar.find_elements(By.XPATH, "div/li")
+		expanded_list = soccer_sidebar.find_elements(By.XPATH, "div/div/li")
+		sport_list[1].click()
+		# time.sleep(5)
+		for i in range(len(sport_list) - 2):
+			item = sport_list[i + 1]
 			self.fetch_data(item)
+		for j in range(len(expanded_list) - 1):
+			item = expanded_list[j]
+			self.fetch_data(item)
+		self.insert_data(self.odds_list)
 		print("completed time is ", time.time() - start_time)
-		time.sleep(1800)
+		# time.sleep(1800)
 		# self.main()
-		# self.db_manager.insert_data(self.odds_list)
-		# self.odds_list = []
-		# self.total_counts = 0
+		# print(self.odds_list)
+		self.odds_list = []
+		self.total_counts = 0
+		# self.db_manager.get_data()
 		# self.driver.quit()
 		# self.driver.close()
 
 	def run(self):
 		threading.Timer(3600, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
-		print("BetFlag =======> ", self.total_counts, "Matches Saved")
+		print("EuroBet =======> ", self.total_counts, "Matches Saved")
 		self.total_counts = 0
 		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		print(self.epoch, self.epoch_time)
@@ -172,7 +169,7 @@ class BetFlag:
 		mycursor.execute(sql, odds_list)
 		mydb.commit()
 		mycursor.close()
-	
+
 	def insert_data(self, odds_list):
 		if len(odds_list) > 0:
 			mydb = mysql.connector.connect(
@@ -189,5 +186,5 @@ class BetFlag:
 			mycursor.close()
 
 if __name__ == "__main__":
-	betflag = BetFlag()
-	betflag.main()
+	eurobet = EuroBet()
+	eurobet.main()

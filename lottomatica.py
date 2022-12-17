@@ -30,15 +30,15 @@ class LottoMatica:
 		self.port = "57558"
 
 	def fetch_data(self, item):
-		time.sleep(3)
+		# time.sleep(3)
 		link_item = item.find_element(By.XPATH, "a/div/span[last()]")
 		list_title = link_item.text
 		if list_title != "OGGI-DOMANI":
 			link_click_item = item.find_element(By.XPATH, "a")
 			# link_click_item.click()
 			self.driver.execute_script("arguments[0].click();", link_click_item)
-			# print(list_title)
-			time.sleep(3)
+			print(list_title)
+			time.sleep(1)
 			sub_list = item.find_elements(By.XPATH, "ul/li")
 			for sub_item in sub_list:
 				sub_link_item = sub_item.find_element(By.XPATH, "a/span/div/div")
@@ -47,15 +47,15 @@ class LottoMatica:
 				sub_title = sub_link_item.text
 				if sub_title == "":
 					sub_title = sub_link_item.get_attribute("innerHTML")
-				# print("--- " + sub_title)
+				print("--- " + sub_title)
 				loading = 1
 				while loading == 1:
 					loading_element = self.driver.find_element(By.ID, "spinner-loading")
 					if 'fade' in loading_element.get_attribute("class").split():
 					    loading = 0
-				time.sleep(5)
+				time.sleep(1)
 				match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
-				time.sleep(3)
+				# time.sleep(3)
 				# print(len(match_list))
 				temp_list = []
 				for match_item in match_list:
@@ -81,24 +81,24 @@ class LottoMatica:
 					ng = ""
 					odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
 					for odd_item in odd_info:
-						if odd_item.get_attribute("data-selname") == "1":
-							first = odd_item.text
-						if odd_item.get_attribute("data-selname") == "X":
-							draw = odd_item.text
-						if odd_item.get_attribute("data-selname") == "2":
-							second = odd_item.text
+						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "1":
+							first = odd_item.get_attribute("innerHTML").replace(" ", "")
+						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "X":
+							draw = odd_item.get_attribute("innerHTML").replace(" ", "")
+						if odd_item.get_attribute("data-selname") and odd_item.get_attribute("data-selname") == "2":
+							second = odd_item.get_attribute("innerHTML").replace(" ", "")
 					uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
 					for uo_item in uo_info:
-						if uo_item.get_attribute("data-selname") == "U":
-							under = uo_item.text
-						if uo_item.get_attribute("data-selname") == "O":
-							over = uo_item.text
+						if uo_item.get_attribute("data-selname") and uo_item.get_attribute("data-selname") == "U":
+							under = uo_item.get_attribute("innerHTML").replace(" ", "")
+						if uo_item.get_attribute("data-selname") and uo_item.get_attribute("data-selname") == "O":
+							over = uo_item.get_attribute("innerHTML").replace(" ", "")
 					gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
 					for gol_item in gol_info:
-						if gol_item.get_attribute("data-selname") == "GG":
-							gg = gol_item.text
-						if gol_item.get_attribute("data-selname") == "NG":
-							ng = gol_item.text
+						if gol_item.get_attribute("data-selname") and gol_item.get_attribute("data-selname") == "GG":
+							gg = gol_item.get_attribute("innerHTML").replace(" ", "")
+						if gol_item.get_attribute("data-selname") and gol_item.get_attribute("data-selname") == "NG":
+							ng = gol_item.get_attribute("innerHTML").replace(" ", "")
 					row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
 					# if self.total_counts == 50:
 					# 	self.db_manager.insert_data(self.odds_list)
@@ -121,11 +121,7 @@ class LottoMatica:
 				# sub_click_item.click()
 
 	def main(self):
-		now_time = datetime.fromtimestamp(time.time())
-		print("LottoMatica =======> ", self.total_counts, "Matches Saved")
-		self.total_counts = 0
-		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
-		print(self.epoch, self.epoch_time)
+		start_time = time.time()
 		self.driver.get("https://www.lottomatica.it/scommesse/sport/")
 		time.sleep(3)
 		if self.epoch == 1:
@@ -147,8 +143,9 @@ class LottoMatica:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		print("completed time is ", time.time() - start_time)
 		time.sleep(1800)
-		self.main()
+		# self.main()
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
 		# self.total_counts = 0

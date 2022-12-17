@@ -15,6 +15,8 @@ class PlanetWin:
 	options = Options()
 	options.add_argument("start-maximized")
 	options.add_argument("ignore-certificate-errors")
+	options.add_argument("headless")
+	options.add_argument("window-size=1200x600")
 	driver1 = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -23,7 +25,7 @@ class PlanetWin:
 		self.epoch_time = epoch_time
 		self.total_counts = 0
 		# self.db_manager = DbManager()
-		# self.odds_list = []
+		self.odds_list = []
 		self.host = "45.8.227.145"
 		self.user = "oddsmatcher"
 		self.password = "~exY([5~fjxN"
@@ -101,13 +103,13 @@ class PlanetWin:
 				# 	self.total_counts = 0
 				if team1 != "" and team2 != "":
 					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-					# self.odds_list.append(row)
+					self.odds_list.append(row)
 					# self.db_manager.insert_row(row)
 					# self.insert_row(row)
-					temp_list.append(row)
+					# temp_list.append(row)
 					self.total_counts = self.total_counts + 1
 			time.sleep(1)
-			self.insert_data(temp_list)
+			# self.insert_data(temp_list)
 			self.driver.execute_script("arguments[0].click();", sub_link_item)
 			# sub_link_item.click()
 
@@ -142,12 +144,12 @@ class PlanetWin:
 			for i in range(len(sport_list)):
 				item = sport_list[i]
 				self.fetch_data(item)
+			self.insert_data(self.odds_list)
 			print("completed time is ", time.time() - start_time)
-			time.sleep(1800)
+			# time.sleep(1800)
 			# self.main()
-			# self.db_manager.insert_data(self.odds_list)
-			# self.odds_list = []
-			# self.total_counts = 0
+			self.odds_list = []
+			self.total_counts = 0
 		# self.driver.quit()
 
 	def run(self):

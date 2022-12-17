@@ -10,11 +10,13 @@ from datetime import datetime
 from translate import Translator
 # from db_manager import DbManager
 
-class GoldBet:
+class LottoMatica:
 
 	options = Options()
 	options.add_argument("start-maximized")
 	options.add_argument("ignore-certificate-errors")
+	options.add_argument("headless")
+	options.add_argument("window-size=1200x600")
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 	def __init__(self, epoch = 1, epoch_time = ""):
@@ -22,7 +24,7 @@ class GoldBet:
 		self.epoch_time = epoch_time
 		self.total_counts = 0
 		# self.db_manager = DbManager()
-		# self.odds_list = []
+		self.odds_list = []
 		self.host = "45.8.227.145"
 		self.user = "oddsmatcher"
 		self.password = "~exY([5~fjxN"
@@ -31,14 +33,14 @@ class GoldBet:
 
 	def fetch_data(self, item):
 		# time.sleep(3)
-		link_click_item = item.find_element(By.XPATH, "a")
 		link_item = item.find_element(By.XPATH, "a/div/span[last()]")
 		list_title = link_item.text
-		# link_click_item.click()
 		if list_title != "OGGI-DOMANI":
+			link_click_item = item.find_element(By.XPATH, "a")
+			# link_click_item.click()
 			self.driver.execute_script("arguments[0].click();", link_click_item)
 			print(list_title)
-			# time.sleep(3)
+			time.sleep(1)
 			sub_list = item.find_elements(By.XPATH, "ul/li")
 			for sub_item in sub_list:
 				sub_link_item = sub_item.find_element(By.XPATH, "a/span/div/div")
@@ -53,9 +55,10 @@ class GoldBet:
 					loading_element = self.driver.find_element(By.ID, "spinner-loading")
 					if 'fade' in loading_element.get_attribute("class").split():
 					    loading = 0
-				time.sleep(3)
+				time.sleep(1)
 				match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
 				# time.sleep(3)
+				# print(len(match_list))
 				temp_list = []
 				for match_item in match_list:
 					time_info = match_item.get_attribute("data-evndate").split(" ")
@@ -98,30 +101,30 @@ class GoldBet:
 							gg = gol_item.get_attribute("innerHTML").replace(" ", "")
 						if gol_item.get_attribute("data-selname") and gol_item.get_attribute("data-selname") == "NG":
 							ng = gol_item.get_attribute("innerHTML").replace(" ", "")
-					row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "goldbet", self.epoch_time)
+					row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
 					# if self.total_counts == 50:
 					# 	self.db_manager.insert_data(self.odds_list)
 					# 	self.odds_list = []
 					# 	self.total_counts = 0
 					if team1 != "" and team2 != "":
 						print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-						# self.odds_list.append(row)
-						# self.db_manager.insert_row(row)
+						self.odds_list.append(row)
 						# self.insert_row(row)
-						temp_list.append(row)
+						# temp_list.append(row)
+						# self.db_manager.insert_row(row)
 						self.total_counts = self.total_counts + 1
 				loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
 				if len(loading_element) > 0:
 					print(loading_element.get_attribute("outerHTML"))
 				time.sleep(1)
-				self.insert_data(temp_list)
+				# self.insert_data(temp_list)
 				self.driver.execute_script("arguments[0].click();", sub_link_item)
 				# sub_link_item.click()
 				# sub_click_item.click()
 
 	def main(self):
 		start_time = time.time()
-		self.driver.get("https://www.goldbet.it/scommesse/sport")
+		self.driver.get("https://www.lottomatica.it/scommesse/sport/")
 		time.sleep(3)
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.ID, "onetrust-pc-btn-handler")
@@ -138,22 +141,23 @@ class GoldBet:
 		sport_list = soccer_sidebar.find_elements(By.XPATH, "li")
 		time.sleep(2)
 		# print(len(sport_list))
+		# time.sleep(200)
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		self.insert_data(self.odds_list)
 		print("completed time is ", time.time() - start_time)
-		time.sleep(1800)
+		# time.sleep(1800)
 		# self.main()
-		# self.db_manager.insert_data(self.odds_list)
-		# self.odds_list = []
-		# self.total_counts = 0
+		self.odds_list = []
+		self.total_counts = 0
 		# self.driver.quit()
 		# self.driver.close()
 
 	def run(self):
 		threading.Timer(3600, self.run).start()
 		now_time = datetime.fromtimestamp(time.time())
-		print("GoldBet =======> ", self.total_counts, "Matches Saved")
+		print("LottoMatica =======> ", self.total_counts, "Matches Saved")
 		self.total_counts = 0
 		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		print(self.epoch, self.epoch_time)
@@ -189,5 +193,5 @@ class GoldBet:
 			mycursor.close()
 
 if __name__ == "__main__":
-	goldbet = GoldBet()
-	goldbet.main()
+	lottomatica = LottoMatica()
+	lottomatica.main()
