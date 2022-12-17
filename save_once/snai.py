@@ -85,31 +85,31 @@ class Snai:
                         odd_index = 0
                         labels = match_item.find_elements(By.XPATH, "..//span[contains(@class, 'footballBetting')]")
                         for odd_item in event_odds:
-                            if labels[odd_index] == '1':
+                            if labels[odd_index].text == '1':
                                 odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                                 first = odd_info.text
-                            elif labels[odd_index] == 'X':
+                            elif labels[odd_index].text == 'X':
                                 odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                                 draw = odd_info.text
-                            elif labels[odd_index] == '2':
+                            elif labels[odd_index].text == '2':
                                 odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                                 second = odd_info.text
-                            elif labels[odd_index] == 'UNDER':
+                            elif labels[odd_index].text == 'UNDER':
                                 uo_info = odd_item.find_elements(By.XPATH, "div/span[contains(@class, 'footballBlueBetting')]")
                                 if len(uo_info) > 0:
                                     under = uo_info[0].text
                                 else:
                                     under = odd_info.text
-                            elif labels[odd_index] == 'OVER':
+                            elif labels[odd_index].text == 'OVER':
                                 uo_info = odd_item.find_elements(By.XPATH, "div/span[contains(@class, 'footballBlueBetting')]")
                                 if len(uo_info) > 0:
                                     over = uo_info[0].text
                                 else:
                                     over = odd_info.text
-                            elif labels[odd_index] == 'GOL':
+                            elif labels[odd_index].text == 'GOL':
                                 odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                                 gg = odd_info.text
-                            elif labels[odd_index] == 'NOGOL':
+                            elif labels[odd_index].text == 'NOGOL':
                                 odd_info = odd_item.find_element(By.XPATH, "span[contains(@class, 'footballBlueBetting')]")
                                 ng = odd_info.text
                             odd_index = odd_index + 1
