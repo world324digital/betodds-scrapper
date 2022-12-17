@@ -52,14 +52,14 @@ class BetWay:
 		item.click()
 		# self.driver.execute_script("arguments[0].click();", item)
 		list_title = item.text
-		# print(list_title)
+		print(list_title)
 		time.sleep(3)
 		sub_list = item.find_elements(By.XPATH, "div[contains(@class, 'competizione-sub')]/a")
 		for sub_item in sub_list:
 			sub_item.click()
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 			sub_title = sub_item.text
-			# print("--- " + sub_title)
+			print("--- " + sub_title)
 			time.sleep(3)
 			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'contenitore-table-grande')]//div[contains(@class, 'contenitore-table')]/div[contains(@class, 'contenitoreRiga')]")
 			# print(len(match_list))
@@ -120,6 +120,11 @@ class BetWay:
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("BetWay =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver.get("https://www.betway.it/scommesse")
 		# print(self.epoch)
 		time.sleep(5)
@@ -143,6 +148,8 @@ class BetWay:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		time.sleep(1800)
+		self.main()
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
 		# self.total_counts = 0
@@ -188,4 +195,4 @@ class BetWay:
 
 if __name__ == "__main__":
 	betway = BetWay()
-	betway.run()
+	betway.main()

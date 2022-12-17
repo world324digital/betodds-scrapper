@@ -8,7 +8,7 @@ import threading
 import mysql.connector
 from datetime import datetime
 from translate import Translator
-from db_manager import DbManager
+# from db_manager import DbManager
 
 class LottoMatica:
 
@@ -31,95 +31,101 @@ class LottoMatica:
 
 	def fetch_data(self, item):
 		time.sleep(3)
-		link_click_item = item.find_element(By.XPATH, "a")
-		# link_click_item.click()
-		self.driver.execute_script("arguments[0].click();", link_click_item)
 		link_item = item.find_element(By.XPATH, "a/div/span[last()]")
 		list_title = link_item.text
-		# print(list_title)
-		time.sleep(3)
-		sub_list = item.find_elements(By.XPATH, "ul/li")
-		for sub_item in sub_list:
-			sub_link_item = sub_item.find_element(By.XPATH, "a/span/div/div")
-			self.driver.execute_script("arguments[0].click();", sub_link_item)
-			# sub_link_item.click()
-			sub_title = sub_link_item.text
-			if sub_title == "":
-				sub_title = sub_link_item.get_attribute("innerHTML")
-			# print("--- " + sub_title)
-			loading = 1
-			while loading == 1:
-				loading_element = self.driver.find_element(By.ID, "spinner-loading")
-				if 'fade' in loading_element.get_attribute("class").split():
-				    loading = 0
-			time.sleep(5)
-			match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
+		if list_title != "OGGI-DOMANI":
+			link_click_item = item.find_element(By.XPATH, "a")
+			# link_click_item.click()
+			self.driver.execute_script("arguments[0].click();", link_click_item)
+			# print(list_title)
 			time.sleep(3)
-			# print(len(match_list))
-			temp_list = []
-			for match_item in match_list:
-				time_info = match_item.get_attribute("data-evndate").split(" ")
-				event_date = ""
-				event_time = ""
-				if len(time_info) > 1:
-					event_date = time_info[0]
-					event_time = time_info[1]
-				equal = match_item.get_attribute("data-evtname")
-				team_info = equal.split(" - ")
-				team1 = ""
-				team2 = ""
-				if len(team_info) > 1:
-					team1 = team_info[0]
-					team2 = team_info[1]
-				first = ""
-				draw = ""
-				second = ""
-				under = ""
-				over = ""
-				gg = ""
-				ng = ""
-				odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
-				for item in odd_info:
-					if item.get_attribute("data-selname") == "1":
-						first = item.text
-					if item.get_attribute("data-selname") == "X":
-						draw = item.text
-					if item.get_attribute("data-selname") == "2":
-						second = item.text
-				uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
-				for item in uo_info:
-					if item.get_attribute("data-selname") == "U":
-						under = item.text
-					if item.get_attribute("data-selname") == "O":
-						over = item.text
-				gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
-				for item in gol_info:
-					if item.get_attribute("data-selname") == "GG":
-						gg = item.text
-					if item.get_attribute("data-selname") == "NG":
-						ng = item.text
-				row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
-				# if self.total_counts == 50:
-				# 	self.db_manager.insert_data(self.odds_list)
-				# 	self.odds_list = []
-				# 	self.total_counts = 0
-				if team1 != "" and team2 != "":
-					print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
-					# self.odds_list.append(row)
-					# self.insert_row(row)
-					temp_list.append(row)
-					# self.db_manager.insert_row(row)
-					self.total_counts = self.total_counts + 1
-			loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
-			if len(loading_element) > 0:
-				print(loading_element.get_attribute("outerHTML"))
-			time.sleep(1)
-			self.insert_data(temp_list)
-			self.driver.execute_script("arguments[0].click();", sub_link_item)
-			# sub_link_item.click()
-			# sub_click_item.click()
+			sub_list = item.find_elements(By.XPATH, "ul/li")
+			for sub_item in sub_list:
+				sub_link_item = sub_item.find_element(By.XPATH, "a/span/div/div")
+				self.driver.execute_script("arguments[0].click();", sub_link_item)
+				# sub_link_item.click()
+				sub_title = sub_link_item.text
+				if sub_title == "":
+					sub_title = sub_link_item.get_attribute("innerHTML")
+				# print("--- " + sub_title)
+				loading = 1
+				while loading == 1:
+					loading_element = self.driver.find_element(By.ID, "spinner-loading")
+					if 'fade' in loading_element.get_attribute("class").split():
+					    loading = 0
+				time.sleep(5)
+				match_list = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'sport-table')]/table[contains(@class, 'table-full')]//tr[contains(@class, 'oddsRow')]")
+				time.sleep(3)
+				# print(len(match_list))
+				temp_list = []
+				for match_item in match_list:
+					time_info = match_item.get_attribute("data-evndate").split(" ")
+					event_date = ""
+					event_time = ""
+					if len(time_info) > 1:
+						event_date = time_info[0]
+						event_time = time_info[1]
+					equal = match_item.get_attribute("data-evtname")
+					team_info = equal.split(" - ")
+					team1 = ""
+					team2 = ""
+					if len(team_info) > 1:
+						team1 = team_info[0]
+						team2 = team_info[1]
+					first = ""
+					draw = ""
+					second = ""
+					under = ""
+					over = ""
+					gg = ""
+					ng = ""
+					odd_info = match_item.find_elements(By.XPATH, "//span[@data-markname='1X2']")
+					for odd_item in odd_info:
+						if odd_item.get_attribute("data-selname") == "1":
+							first = odd_item.text
+						if odd_item.get_attribute("data-selname") == "X":
+							draw = odd_item.text
+						if odd_item.get_attribute("data-selname") == "2":
+							second = odd_item.text
+					uo_info = match_item.find_elements(By.XPATH, "//span[@data-markname='U/O(2.5)']")
+					for uo_item in uo_info:
+						if uo_item.get_attribute("data-selname") == "U":
+							under = uo_item.text
+						if uo_item.get_attribute("data-selname") == "O":
+							over = uo_item.text
+					gol_info = match_item.find_elements(By.XPATH, "//span[@data-markname='GG/NG']")
+					for gol_item in gol_info:
+						if gol_item.get_attribute("data-selname") == "GG":
+							gg = gol_item.text
+						if gol_item.get_attribute("data-selname") == "NG":
+							ng = gol_item.text
+					row = (list_title, sub_title, team1, team2, event_date, event_time, equal, first, second, draw, under, over, gg, ng, "lottomatica", self.epoch_time)
+					# if self.total_counts == 50:
+					# 	self.db_manager.insert_data(self.odds_list)
+					# 	self.odds_list = []
+					# 	self.total_counts = 0
+					if team1 != "" and team2 != "":
+						print(event_date + " " + event_time + " " + equal + " " + first + " " + draw + " " + second + " " + under + " " + over + " " + gg + " " + ng)
+						# self.odds_list.append(row)
+						# self.insert_row(row)
+						temp_list.append(row)
+						# self.db_manager.insert_row(row)
+						self.total_counts = self.total_counts + 1
+				loading_element = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'modal-backdrop')]")
+				if len(loading_element) > 0:
+					print(loading_element.get_attribute("outerHTML"))
+				time.sleep(1)
+				self.insert_data(temp_list)
+				self.driver.execute_script("arguments[0].click();", sub_link_item)
+				# sub_link_item.click()
+				# sub_click_item.click()
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("LottoMatica =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver.get("https://www.lottomatica.it/scommesse/sport/")
 		time.sleep(3)
 		if self.epoch == 1:
@@ -141,6 +147,8 @@ class LottoMatica:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		time.sleep(1800)
+		self.main()
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
 		# self.total_counts = 0
@@ -187,4 +195,4 @@ class LottoMatica:
 
 if __name__ == "__main__":
 	lottomatica = LottoMatica()
-	lottomatica.run()
+	lottomatica.main()

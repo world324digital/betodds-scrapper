@@ -121,6 +121,11 @@ class BetFlag:
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("BetFlag =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver.get("https://www.betflag.it/sport")
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.ID, "LinkButton2")
@@ -140,6 +145,8 @@ class BetFlag:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		time.sleep(1800)
+		self.main()
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
 		# self.total_counts = 0
@@ -186,4 +193,4 @@ class BetFlag:
 
 if __name__ == "__main__":
 	betflag = BetFlag()
-	betflag.run()
+	betflag.main()

@@ -112,6 +112,11 @@ class EuroBet:
 			self.insert_data(temp_list)
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("EuroBet =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver.get("https://www.eurobet.it/scommesse/")
 		if self.epoch == 1:
 			time.sleep(3)
@@ -134,6 +139,8 @@ class EuroBet:
 		for j in range(len(expanded_list) - 1):
 			item = expanded_list[j]
 			self.fetch_data(item)
+		time.sleep(1800)
+		self.main()
 		# print(self.odds_list)
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
@@ -182,4 +189,4 @@ class EuroBet:
 
 if __name__ == "__main__":
 	eurobet = EuroBet()
-	eurobet.run()
+	eurobet.main()

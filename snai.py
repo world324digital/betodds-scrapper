@@ -126,6 +126,11 @@ class Snai:
                 self.insert_data(temp_list)
 
     def main(self):
+        now_time = datetime.fromtimestamp(time.time())
+        print("Snai =======> ", self.total_counts, "Matches Saved")
+        self.total_counts = 0
+        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+        print(self.epoch, self.epoch_time)
         self.driver.get("https://www.snai.it/sport")
         if self.epoch == 1:
             time.sleep(3)
@@ -144,6 +149,8 @@ class Snai:
             # print(item.get_attribute("outerHTML"))
             # print("===============")
             self.fetch_data(item)
+        time.sleep(1800)
+        self.main()
         # self.db_manager.insert_data(self.odds_list)
         # self.odds_list = []
         # self.total_counts = 0
@@ -190,4 +197,4 @@ class Snai:
 
 if __name__ == "__main__":
     snai = Snai()
-    snai.run()
+    snai.main()

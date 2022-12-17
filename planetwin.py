@@ -112,6 +112,11 @@ class PlanetWin:
 			# sub_link_item.click()
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("PlanetWin =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver1.get("https://planetwin365.it/it/scommesse/calcio")
 		time.sleep(3)
 		if self.epoch == 1:
@@ -141,6 +146,8 @@ class PlanetWin:
 			for i in range(len(sport_list)):
 				item = sport_list[i]
 				self.fetch_data(item)
+			time.sleep(1800)
+			self.main()
 			# self.db_manager.insert_data(self.odds_list)
 			# self.odds_list = []
 			# self.total_counts = 0
@@ -186,4 +193,4 @@ class PlanetWin:
 
 if __name__ == "__main__":
 	planetwin = PlanetWin()
-	planetwin.run()
+	planetwin.main()

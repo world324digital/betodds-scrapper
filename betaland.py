@@ -122,6 +122,11 @@ class BetaLand:
 			# self.driver.execute_script("arguments[0].click();", sub_item)
 
 	def main(self):
+		now_time = datetime.fromtimestamp(time.time())
+		print("BetaLand =======> ", self.total_counts, "Matches Saved")
+		self.total_counts = 0
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
+		print(self.epoch, self.epoch_time)
 		self.driver.get("https://www.betaland.it/")
 		time.sleep(5)
 		if self.epoch == 1:
@@ -143,6 +148,8 @@ class BetaLand:
 		for i in range(len(sport_list)):
 			item = sport_list[i]
 			self.fetch_data(item)
+		time.sleep(1800)
+		self.main()
 		# self.db_manager.insert_data(self.odds_list)
 		# self.odds_list = []
 		# self.total_counts = 0
@@ -189,4 +196,4 @@ class BetaLand:
 
 if __name__ == "__main__":
 	betaland = BetaLand()
-	betaland.run()
+	betaland.main()
