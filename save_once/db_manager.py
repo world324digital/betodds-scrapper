@@ -54,7 +54,7 @@ class DbManager:
         # mycursor = mydb.cursor()
         mycursor = self.mydb.cursor()
         # mycursor.execute("SELECT * FROM `python_odds_table_new` where `bookmarker` = 'betaland'")
-        mycursor.execute("SELECT * FROM `python_odds_table_new`")
+        mycursor.execute("SELECT COUNT(*) FROM `python_odds_table_new`")
         result = mycursor.fetchall()
         print(len(result))
         for x in result:
@@ -101,7 +101,7 @@ class DbManager:
         # print(mycursor.rowcount, "was inserted")
 
     def start(self):
-        self.drop_table()
+        # self.drop_table()
         self.create_table()
         self.check()
         # row = ("list_title", "sub_title", 'team1', "team2", "event_date", "event_time", "equal", "first", "second", "draw", "under", "over", "gg", "ng", "betway", "self.epoch_time")
