@@ -131,6 +131,8 @@ class Snai:
 
     def main(self):
         start_time = time.time()
+        now_time = datetime.fromtimestamp(time.time())
+        self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
         self.driver.get("https://www.snai.it/sport")
         if self.epoch == 1:
             time.sleep(3)
@@ -155,7 +157,7 @@ class Snai:
         # self.main()
         self.odds_list = []
         self.total_counts = 0
-        # self.driver.quit()
+        self.driver.quit()
         # self.driver.close()
 
     def run(self):

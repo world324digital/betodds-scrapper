@@ -115,6 +115,8 @@ class PlanetWin:
 
 	def main(self):
 		start_time = time.time()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		self.driver1.get("https://planetwin365.it/it/scommesse/calcio")
 		time.sleep(3)
 		if self.epoch == 1:
@@ -150,7 +152,7 @@ class PlanetWin:
 			# self.main()
 			self.odds_list = []
 			self.total_counts = 0
-		# self.driver.quit()
+			self.driver.quit()
 
 	def run(self):
 		threading.Timer(3600, self.run).start()

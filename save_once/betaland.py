@@ -126,6 +126,8 @@ class BetaLand:
 	def main(self):
 		start_time = time.time()
 		self.driver.get("https://www.betaland.it/")
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		time.sleep(5)
 		if self.epoch == 1:
 			cookie_close_btn = self.driver.find_element(By.XPATH, "//div[contains(@class, 'tibrr-cookie-consent-button')]/button")
@@ -151,7 +153,7 @@ class BetaLand:
 		# self.main()
 		self.odds_list = []
 		self.total_counts = 0
-		# self.driver.quit()
+		self.driver.quit()
 		# self.driver.close()
 
 	def run(self):

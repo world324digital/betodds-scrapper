@@ -123,6 +123,8 @@ class BetWay:
 
 	def main(self):
 		start_time = time.time()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		self.driver.get("https://www.betway.it/scommesse")
 		# print(self.epoch)
 		time.sleep(5)
@@ -152,7 +154,7 @@ class BetWay:
 		# self.main()
 		self.odds_list = []
 		self.total_counts = 0
-		# self.driver.quit()
+		self.driver.quit()
 		# self.driver.close()
 	def run(self):
 		threading.Timer(3600, self.run).start()

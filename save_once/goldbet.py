@@ -124,6 +124,8 @@ class GoldBet:
 
 	def main(self):
 		start_time = time.time()
+		now_time = datetime.fromtimestamp(time.time())
+		self.epoch_time = now_time.strftime("%Y-%m-%d %H:%M:%S")
 		self.driver.get("https://www.goldbet.it/scommesse/sport")
 		time.sleep(3)
 		if self.epoch == 1:
@@ -150,7 +152,7 @@ class GoldBet:
 		# self.main()
 		self.odds_list = []
 		self.total_counts = 0
-		# self.driver.quit()
+		self.driver.quit()
 		# self.driver.close()
 
 	def run(self):
